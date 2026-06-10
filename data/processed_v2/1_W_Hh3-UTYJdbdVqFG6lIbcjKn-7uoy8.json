@@ -1,0 +1,136 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 23,
+    "meeting_date": "2024-01-16",
+    "financial_year": "2024-25"
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 22nd CSR Committee Meeting",
+      "Action taken report on 22nd CSR Committee Meeting",
+      "Status of Ongoing and Recently Completed Projects",
+      "SELECTION CRITERIA to be considered for selection of upcoming CSR projects",
+      "PTC-CSR Annual Action Plan for FY 2024-25"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Project A",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "NGO A",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 800000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Completion",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project B",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "NGO B",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 500000.0,
+        "approved_cost": null,
+        "disbursed_amount": 300000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Completion",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project C",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "NGO C",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 750000.0,
+        "approved_cost": null,
+        "disbursed_amount": 600000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Completion",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project D",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "NGO D",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1200000.0,
+        "approved_cost": null,
+        "disbursed_amount": 1000000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Completion",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project E",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "NGO E",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 300000.0,
+        "approved_cost": null,
+        "disbursed_amount": 250000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Completion",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [
+    22
+  ],
+  "high_level_summary": "The document outlines the agenda for the 23rd CSR Committee meeting, including project proposals and budget allocations for FY 2024-25. It also reviews the status of ongoing and completed projects."
+}

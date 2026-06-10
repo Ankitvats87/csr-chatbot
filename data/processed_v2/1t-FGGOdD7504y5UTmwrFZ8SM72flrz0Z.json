@@ -1,0 +1,152 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 22,
+    "meeting_date": "2024-03-22",
+    "financial_year": "2024-25"
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 21ˢᵗ CSR Committee Meeting",
+      "Action taken report on 21ˢᵗ CSR Committee Meeting",
+      "Status of Ongoing and Recently Completed Projects",
+      "New Project Proposal for Consideration of CSR Committee",
+      "Revised Budget Allocation for CSR"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Strengthening Patient Care Services at Employee State Insurance Corporation Medical College & Hospital (ESIC) Faridabad by deploying Two Mobile Medical Van with equipment",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "ESIC",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 9489958.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Haryana",
+        "district": null,
+        "city": "Faridabad"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Patients"
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "PTC-Center of Excellence (CoE) at NPTI, Faridabad",
+      "project_aliases": [
+        "CoE on AFFORDABLE AND RELIABLE MODERN ENERGY"
+      ],
+      "project_status": "Proposed",
+      "ngo": null,
+      "financial": {
+        "project_cost": 31800000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Haryana",
+        "district": null,
+        "city": "Faridabad"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Energy"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Construction, Operation, and Maintenance of Modern Public Toilet Complexes at Ayodhya & Varanasi",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Sulabh International Social Service Organisation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1443632.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Uttar Pradesh",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Sanitation"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "School Toilet Blocks at Arrah (Bhojpur) district of Bihar",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Sulabh International Social Service Organisation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": null,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Bihar",
+        "district": "Bhojpur",
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Sanitation"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [
+    21
+  ],
+  "high_level_summary": "The document outlines the agenda for the 22nd CSR Committee meeting, including project proposals and budget allocations. It discusses ongoing projects and new proposals for healthcare and sanitation initiatives."
+}

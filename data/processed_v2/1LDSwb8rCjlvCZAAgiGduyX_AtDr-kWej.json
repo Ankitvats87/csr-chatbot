@@ -1,0 +1,50 @@
+{
+  "document_type": "Board Minutes",
+  "meeting": {
+    "meeting_number": null,
+    "meeting_date": null,
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": null
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Strengthening the Primary Healthcare Delivery Ecosystem with 5G enabled Futuristic Healthcare Delivery Kiosks with Point of Care Diagnostics",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Nirogya Life Line Foundation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": null,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Uttar Pradesh",
+        "district": "Gautam Budh Nagar",
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": null
+      },
+      "lifecycle_stage": "Board_Approval",
+      "notes": "Change of location from Delhi to Gautam Budh Nagar (UP)."
+    }
+  ],
+  "references_to_prior_meetings": [],
+  "high_level_summary": "The document outlines the approval of a healthcare project by the Board. The project involves 5G enabled healthcare kiosks and has a change of location."
+}

@@ -1,0 +1,31 @@
+# LOCAL TESTING image — unlike the production Dockerfile, this bakes
+# scripts/ and data/ (sqlite registry + processed_v2 extractions) into the
+# image because Docker Desktop cannot bind-mount Google Drive (G:) folders.
+# Data changes inside the container are ephemeral; this image is for
+# pre-deployment validation only.
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+COPY app ./app
+COPY scripts ./scripts
+COPY data ./data
+
+RUN mkdir -p /app/data/sqlite /app/data/logs /app/data/raw_docs
+
+EXPOSE 8000
+
+# Build the BM25 chunk store from live Pinecone before serving, so hybrid
+# retrieval is active. Falls back to vector-only if the build fails.
+CMD ["sh", "-c", "python -u scripts/build_chunk_store.py || echo 'chunk store build failed — continuing vector-only'; exec uvicorn app.main:app --host 0.0.0.0 --port 8000"]

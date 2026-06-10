@@ -1,0 +1,102 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": null,
+    "meeting_date": "2026-02-09",
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [],
+    "resolution_numbers": [
+      "1",
+      "2"
+    ],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Strengthening the Primary Healthcare Delivery Ecosystem with 5G enabled Futuristic Healthcare Delivery Kiosks with Point of Care Diagnostics",
+      "project_aliases": [
+        "Healthcare Delivery Kiosks project",
+        "Futuristic Healthcare Delivery Kiosks with Point of Care Diagnostics"
+      ],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Nirogya Life Line Foundation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 11534300.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": "Gautam Buddha Nagar",
+        "city": null
+      },
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Bringing Smiles Transforming",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Mission Smile",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3300000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Operation of \"100 Nos. Ekal Vidyalaya's\"",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Bharat Lok Shiksha Parishad (BLSP)",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [],
+  "high_level_summary": "The document outlines CSR project proposals and resolutions for healthcare initiatives. It includes budget allocations and NGO partnerships."
+}

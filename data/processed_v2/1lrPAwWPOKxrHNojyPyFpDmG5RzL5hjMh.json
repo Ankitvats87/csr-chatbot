@@ -1,0 +1,249 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 29,
+    "meeting_date": "2025-09-04",
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 28ᵗʰ CSR Committee Meeting",
+      "Action Taken Report on 28ᵗʰ CSR Committee Meeting",
+      "New Project Proposal for Presentation to CSR Committee",
+      "Status of ongoing project"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Health Program",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "NGO A",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 5000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 4500000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Skill Development Initiative",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "NGO B",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 2800000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Education Support",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "NGO C",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 4000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 3500000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Women Health and Hygiene",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "NGO D",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 2000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 1800000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Sulabh Project",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Sulabh International",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 10000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 5000000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "ESIC Project",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "ESIC Foundation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 8000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 3500000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Labhmuni Jan Seva Trust",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Labhmuni Jan Seva Trust",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 2000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 1000000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Sapna",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Sapna NGO",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1500000.0,
+        "approved_cost": null,
+        "disbursed_amount": 750000.0,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [
+    28
+  ],
+  "high_level_summary": "The 29th CSR Committee meeting discusses new project proposals and the status of ongoing projects. Various NGOs are involved in health and education initiatives."
+}

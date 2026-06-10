@@ -1,0 +1,100 @@
+{
+  "document_type": "Resolution by Circulation",
+  "meeting": {
+    "meeting_number": 30,
+    "meeting_date": "2026-03-23",
+    "financial_year": "2025-26"
+  },
+  "governance": {
+    "agenda_items": [
+      "Revised Annual Action Plan for FY 2025-2026",
+      "Transfer of unspent amount for the executed/completed CSR Projects",
+      "Project Proposals and Budgets",
+      "Status of Unspent Amount for projects approved in FY 2023-24",
+      "Resolution"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "PTC Vishram Sadan at Lady Hardinge Medical College, New Delhi",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": null,
+      "financial": {
+        "project_cost": 81200000.0,
+        "approved_cost": 81200000.0,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "New Delhi"
+      },
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Bharat Lok Shiksha Parishad",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": null,
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": 3000000.0,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Mission Smile",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": null,
+      "financial": {
+        "project_cost": 3300000.0,
+        "approved_cost": 3300000.0,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Nirogya Life Line Foundation",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": null,
+      "financial": {
+        "project_cost": 11500000.0,
+        "approved_cost": 11500000.0,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [],
+  "high_level_summary": "The document outlines the revised annual action plan for FY 2025-26 and discusses the transfer of unspent amounts from previous projects. It includes project proposals and budgets for various initiatives."
+}

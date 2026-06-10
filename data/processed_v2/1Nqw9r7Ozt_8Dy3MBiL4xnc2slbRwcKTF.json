@@ -1,0 +1,122 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 24,
+    "meeting_date": "2024-11-06",
+    "financial_year": "2024-25"
+  },
+  "governance": {
+    "agenda_items": [
+      "To take note of following",
+      "Action taken report on 23ʳᵈ CSR Committee Meeting",
+      "IICA opinion to deal delay in completion of PTC Vishram Sadan beyond March 2025 and furnishing their opinion mainly on following actions.",
+      "Status of Ongoing Projects",
+      "New Project Proposal for Consideration and recommendation of CSR Committee"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": "16ᵗʰ Oct, 2024",
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Tree Plantation Drive (with 5000 Nos of Plant) and maintenance in City Forest, Jaunapur, Delhi",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Give Me Trees Trust",
+        "ngo_type": "Trust",
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3750000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "Jaunapur"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Community"
+      },
+      "classification": {
+        "csr_schedule": "v",
+        "csr_sector": "Environment"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": "This project aims to enhance green cover and improve local air quality."
+    },
+    {
+      "project_id": null,
+      "project_name": "Strengthening Patient Care Services at Ramakrishna Mission Free Tuberculosis Clinic and Medical Centre- Karol Bagh, Delhi",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Ramakrishna Mission",
+        "ngo_type": "Society",
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 5506000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "Karol Bagh"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Patients"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": "This project focuses on enhancing healthcare services for tuberculosis patients."
+    },
+    {
+      "project_id": null,
+      "project_name": "Conservation, preservation, illumination and maintenance of ASI Monuments in Lodhi Garden - New Delhi",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "National Culture Fund",
+        "ngo_type": "Trust",
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": null,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "New Delhi"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Community"
+      },
+      "classification": {
+        "csr_schedule": "v",
+        "csr_sector": "Culture"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": "This project aims to preserve and maintain historical monuments."
+    }
+  ],
+  "references_to_prior_meetings": [
+    23
+  ],
+  "high_level_summary": "The 24th CSR Committee meeting discussed ongoing projects, new proposals, and actions taken from the previous meeting. Key projects include a tree plantation drive and strengthening patient care services."
+}

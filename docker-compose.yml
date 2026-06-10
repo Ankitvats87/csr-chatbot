@@ -1,0 +1,55 @@
+services:
+  app:
+    build: .
+    image: spark63-csr-bot:latest
+    container_name: csrbot-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    expose:
+      - "8000"
+    networks:
+      - csrbot
+
+  ingestion:
+    build: .
+    image: spark63-csr-bot:latest
+    container_name: csrbot-ingestion
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    command: ["python", "-m", "app.ingestion.scheduler"]
+    depends_on:
+      - app
+    networks:
+      - csrbot
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: csrbot-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - csrbot
+
+networks:
+  csrbot:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

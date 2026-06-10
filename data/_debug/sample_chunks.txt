@@ -1,0 +1,78 @@
+Sampled 4 chunks from Pinecone namespace 'knowledgebase'
+======================================================================
+
+--- chunk 1 | doc='21st CSR Agenda dated 08.02.2024_ Meeting dated 13.02.2024.pdf' | page=38 | score=0.606 ---
+### Project Proposals
+
+| Project Name                     | Implementing NGO            | Budget (INR) | Expenditure (INR) |
+|----------------------------------|-----------------------------|--------------|--------------------|
+| Clean Water Initiative            | NGO A                       | 500,000      | 300,000            |
+| Education for All                | NGO B                       | 750,000      | 500,000            |
+| Health Awareness Campaign         | NGO C                       | 300,000      | 200,000            |
+| Women Empowerment Program         | NGO D                       | 400,000      | 250,000            |
+| Sustainable Agriculture Project   | NGO E                       | 600,000      | 350,000            |
+
+### Committee Attendees
+
+--- chunk 2 | doc='30th CSR Agenda dt 25.03.2026_ Meeting dated 11.03.2026.pdf' | page=12 | score=0.595 ---
+### Project Proposals
+
+| Proposal Description | Budget (INR) | Expenditures (INR) | Implementing NGO |
+|----------------------|--------------|---------------------|-------------------|
+| Clean Ganga Fund     | 2,31,925     | -                   | -                 |
+
+### Committee Attendees
+
+| Name                | Position          |
+|---------------------|-------------------|
+| [Name 1]            | [Position 1]      |
+| [Name 2]            | [Position 2]      |
+| [Name 3]            | [Position 3]      |
+| [Name 4]            | [Position 4]      |
+| [Name 5]            | [Position 5]      |
+
+--- chunk 3 | doc='20th CSR Agenda dated18.08.2023_ Meeting dated 24.08.2023.pdf' | page=22 | score=0.585 ---
+### Budget Expenditures
+
+| Item                             | Amount (INR) |
+|----------------------------------|--------------|
+| Project Management                | 1,000,000    |
+| Administrative Costs              | 500,000      |
+| Monitoring and Evaluation         | 300,000      |
+| Miscellaneous                     | 200,000      |
+
+### Committee Attendees
+
+| Name                | Position                | Organization         |
+|---------------------|------------------------|----------------------|
+| John Doe            | Chairperson            | PTC India Limited    |
+| Jane Smith          | Member                 | PTC India Limited    |
+| Robert Brown        | Member                 | IIT Delhi            |
+| Emily White         | Member                 | IIT Delhi            |
+| Michael Green       | Member                 | NGO A                |
+| Sarah Johnson       | Member                 | NGO B                |
+
+--- chunk 4 | doc='21st CSR Agenda dated 08.02.2024_ Meeting dated 13.02.2024.pdf' | page=37 | score=0.579 ---
+### Project Proposal Table
+
+| Project Name                          | Implementing NGO | Budget (INR) | Duration (Years) |
+|---------------------------------------|------------------|--------------|------------------|
+| Center of Excellence under CSR        | NPTI             | 95,00,000    | 3                |
+
+### Budget and Expenditure Table
+
+| Description                           | Amount (INR)     |
+|---------------------------------------|------------------|
+| Total Cost per Annum                 | 98,80,000        |
+| Fee of PFT @ 4% per annum            | 3,80,000         |
+
+### Committee Attendees List
+
+| Name                | Position               |
+|---------------------|-----------------------|
+| [Name 1]           | [Position 1]          |
+| [Name 2]           | [Position 2]          |
+| [Name 3]           | [Position 3]          |
+| [Name 4]           | [Position 4]          |
+| [Name 5]           | [Position 5]          |
+

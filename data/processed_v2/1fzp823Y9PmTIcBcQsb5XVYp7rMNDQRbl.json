@@ -1,0 +1,116 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 28,
+    "meeting_date": "2025-06-18",
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 26ᵗʰ CSR Committee Meeting",
+      "Confirmation of Minutes of 27ᵗʰ CSR Committee Meeting",
+      "Action Taken Report on 26ᵗʰ and 27ᵗʰ CSR Committee Meeting",
+      "Matters for noting of CSR Committee",
+      "Status of Ongoing Projects",
+      "Opening of Annual Unspent CSR Account",
+      "Delegation of power to deal with operational issues in relation to approved CSR Projects",
+      "Annual Action Plan for FY 2025-2026",
+      "List of New Project - total 47 Nos. Project."
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Project A",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "NGO A",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project B",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "NGO B",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 500000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project C",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "NGO C",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 750000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project D",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "NGO D",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1200000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": null,
+      "beneficiary": null,
+      "classification": null,
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [],
+  "high_level_summary": "The document outlines the agenda for the 28th CSR Committee meeting, including project proposals and ongoing project statuses."
+}

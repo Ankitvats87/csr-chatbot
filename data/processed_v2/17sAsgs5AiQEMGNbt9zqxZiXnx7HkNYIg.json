@@ -1,0 +1,316 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 26,
+    "meeting_date": null,
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "CT-Scanner for Safdarjung Hospital",
+      "project_aliases": [
+        "Support for CT Scan Machine at Safdarjung Hospital"
+      ],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Doctors for You (DFY)",
+        "ngo_type": "Society",
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 16500000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "Delhi"
+      },
+      "beneficiary": {
+        "beneficiary_count": 50000,
+        "beneficiary_type": "Patients"
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Skill Development for underprivileged in J&K",
+      "project_aliases": [
+        "Empowering Marginalized and Vulnerable Youth through Skill Development Training"
+      ],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Prayas JAC Society",
+        "ngo_type": "Society",
+        "registration_date": "1989-08-29"
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Jammu and Kashmir",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 230,
+        "beneficiary_type": "Youth"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Project Lighting the Future: Quality Education for Migrant Children",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Greenworld Education & Research",
+        "ngo_type": "Section 8 Company",
+        "registration_date": "2017-04-19"
+      },
+      "financial": {
+        "project_cost": 800000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Children"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Health Care- Eye Equipment for Hospital run by Sapna at Alwar",
+      "project_aliases": [
+        "Procurement of eye equipment for Mahatma Gandhi Netralaya, Alwar, Rajasthan"
+      ],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Sapna",
+        "ngo_type": "Society",
+        "registration_date": "2004-10-21"
+      },
+      "financial": {
+        "project_cost": 3405000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Rajasthan",
+        "district": null,
+        "city": "Alwar"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Older persons"
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Smart Classes for Govt Schools-Jammu",
+      "project_aliases": [
+        "Tech Revolution Edu Connect: Transforming Learning Landscape in Jammu District, J & K"
+      ],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Abhyudaya Trust",
+        "ngo_type": "Trust",
+        "registration_date": "2017-06-29"
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Jammu and Kashmir",
+        "district": null,
+        "city": "Jammu"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Students"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Medical camps for identifying suspected cardiac cases, diagnosis and treatment of children",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Child Heart Foundation",
+        "ngo_type": "Trust",
+        "registration_date": "2013-01-01"
+      },
+      "financial": {
+        "project_cost": 2000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "Delhi"
+      },
+      "beneficiary": {
+        "beneficiary_count": 230,
+        "beneficiary_type": "Children"
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Maatri Seva Program (Care Homes)",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Paramhansa Yogananda Public Charitable Trust",
+        "ngo_type": "Public Charitable Trust",
+        "registration_date": "2015-08-06"
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Uttar Pradesh",
+        "district": null,
+        "city": "Vrindavan"
+      },
+      "beneficiary": {
+        "beneficiary_count": 20,
+        "beneficiary_type": "Elderly women"
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Production and Distribution of Sanitary Napkins for women from marginalized communities",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Gyanda Bharti Charitable and Education Trust",
+        "ngo_type": "Society",
+        "registration_date": "2019-02-02"
+      },
+      "financial": {
+        "project_cost": 1800000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Uttar Pradesh",
+        "district": null,
+        "city": "Noida"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Women and girls"
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Purchase of Alcon’s Argos biometer with other integrated equipment for best results in cataract surgery",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "LABHMUNI JANSEVA TRUST",
+        "ngo_type": "Trust",
+        "registration_date": "1991-01-08"
+      },
+      "financial": {
+        "project_cost": 15000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Madhya Pradesh",
+        "district": null,
+        "city": "Mandsaur"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": "Patients"
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Committee_Recommendation",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [
+    24
+  ],
+  "high_level_summary": "The document outlines various CSR projects recommended by the 26th CSR Committee meeting. It includes details on project costs, NGOs involved, and beneficiary information."
+}

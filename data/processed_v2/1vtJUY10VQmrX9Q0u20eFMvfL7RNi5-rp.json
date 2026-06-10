@@ -1,0 +1,286 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 26,
+    "meeting_date": "2025-03-04",
+    "financial_year": "2024-25"
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 25ᵗʰ CSR Committee Meeting",
+      "Action taken report on 25ᵗʰ CSR Committee Meeting",
+      "Doctors for You (DFY), Delhi.- CT- Scanner for Safdarjung Hospital",
+      "Prayas JAC Society -Skill Development – for underprivileged in J&K",
+      "Greenworld Education & Research, Delhi- Education",
+      "Sapna, Delhi- Health Care- Eye Equipment for Hospital run by Sapna at Alwar",
+      "Abhyudaya Trust- Smart Classes for Govt Schools-Jammu",
+      "Child Heart Foundation, Delhi- Healthcare- Heart surgery support to underprivileged",
+      "Paramhansa Yogananda Public Charitable Trust- Supporting livelihood of senior citizen widows of Vrindavan",
+      "Gyanda Bharti Charitable and Education Trust- Healthcare- Sanitary Napkins for marginalized women",
+      "Shri Labhmuni Jan Seva Trust- Healthcare -Equipment for Cataract surgery"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Doctors for You (DFY), Delhi.- CT- Scanner for Safdarjung Hospital",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Doctors for You (DFY)",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1650000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": "Delhi"
+      },
+      "beneficiary": {
+        "beneficiary_count": 400,
+        "beneficiary_type": "Children"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Prayas JAC Society -Skill Development – for underprivileged in J&K",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Prayas JAC Society",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 2900000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Jammu & Kashmir",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 230,
+        "beneficiary_type": "Youth"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Greenworld Education & Research, Delhi- Education",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Greenworld Education & Research",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 800000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 1000,
+        "beneficiary_type": "Children"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Sapna, Delhi- Health Care- Eye Equipment for Hospital run by Sapna at Alwar",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Sapna",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3405000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Rajasthan",
+        "district": "Alwar",
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 200,
+        "beneficiary_type": "Elderly"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Abhyudaya Trust- Smart Classes for Govt Schools-Jammu",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Abhyudaya Trust",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Jammu & Kashmir",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 500,
+        "beneficiary_type": "Students"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Child Heart Foundation, Delhi- Healthcare- Heart surgery support to underprivileged",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Child Heart Foundation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 2000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 100,
+        "beneficiary_type": "Children"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Gyanda Bharti Charitable and Education Trust- Healthcare- Sanitary Napkins for marginalized women",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Gyanda Bharti Charitable and Education Trust",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1800000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 500,
+        "beneficiary_type": "Women"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Shri Labhmuni Jan Seva Trust- Healthcare -Equipment for Cataract surgery",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Shri Labhmuni Jan Seva Trust",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 6395000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Madhya Pradesh",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 200,
+        "beneficiary_type": "Elderly"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [],
+  "high_level_summary": "The 26th CSR Committee meeting discussed various project proposals for healthcare and education initiatives. The projects aim to support underprivileged communities in Delhi and Jammu & Kashmir."
+}

@@ -1,0 +1,16 @@
+{
+    email {$ACME_EMAIL}
+}
+
+{$PUBLIC_DOMAIN} {
+    encode gzip
+
+    # Only the Telegram webhook, health check, and admin panel are exposed publicly.
+    @api path / /webhook/* /health /admin /admin/*
+    handle @api {
+        reverse_proxy app:8000
+    }
+
+    # Block everything else.
+    respond 404
+}

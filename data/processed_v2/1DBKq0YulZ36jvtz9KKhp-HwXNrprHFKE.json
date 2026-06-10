@@ -1,0 +1,116 @@
+{
+  "document_type": "MOA",
+  "meeting": {
+    "meeting_number": 29,
+    "meeting_date": "2025-12-04",
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [
+      "Opening of Annual Unspent CSR Account.",
+      "Delegation of power to deal with operational issues in relation to approved CSR projects.",
+      "Annual Action Plan for FY 2025-26"
+    ],
+    "resolution_numbers": [
+      "(i)",
+      "(ii)",
+      "(iii)"
+    ],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Mission Smile - Bringing Smiles Transforming Lives",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Mission Smile",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3300000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": 100,
+        "beneficiary_type": "Patients"
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Nirogya Lifeline Foundation - Strengthening the Primary Healthcare Delivery Ecosystem with 5G enabled Futuristic Healthcare Delivery Kiosks with Point of Care Diagnostics",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Nirogya Life Line Foundation",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 11534300.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": null,
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Bharat Lok Shiksha Parishad (BLSP), Delhi - 100 Nos. Ekal Vidyalaya’s for one year",
+      "project_aliases": [],
+      "project_status": "Approved",
+      "ngo": {
+        "ngo_name": "Bharat Lok Shiksha Parishad (BLSP), Delhi",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": null,
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Board_Approval",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [],
+  "high_level_summary": "The document outlines the CSR projects approved for FY 2025-26. It includes details on the allocation of funds and the delegation of powers for operational issues."
+}

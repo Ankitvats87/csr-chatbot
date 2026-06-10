@@ -1,0 +1,38 @@
+# LOCAL TESTING stack — run the bot on your PC and chat with it from your
+# mobile Telegram app via long-polling (no public webhook / Caddy needed).
+#
+#   docker compose -f docker-compose.local.yml up --build
+#
+# NOTE: the poller calls deleteWebhook on startup, which DISCONNECTS the
+# production VPS webhook (same bot token). After local testing, restore
+# production with scripts/setup_webhook.sh on the VPS.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    image: spark63-csr-bot:local
+    container_name: csrbot-local-app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - csrbot-local
+
+  poller:
+    image: spark63-csr-bot:local
+    container_name: csrbot-local-poller
+    env_file:
+      - .env
+    environment:
+      TELEGRAM_RELAY_URL: http://app:8000/webhook/telegram
+    command: ["python", "-u", "scripts/local_poll.py"]
+    depends_on:
+      - app
+    networks:
+      - csrbot-local
+
+networks:
+  csrbot-local:
+    driver: bridge

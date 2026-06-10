@@ -1,0 +1,146 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 20,
+    "meeting_date": "2023-08-24",
+    "financial_year": null
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 19th CSR Committee Meeting",
+      "Action taken report on 19th CSR Committee Meeting",
+      "PTC- CSR Annual Action Plan of FY 2023-24",
+      "Status of Ongoing and Recently Completed Projects",
+      "New Project proposal for Consideration of CSR Committee"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "Psychosocial & healthcare Support to orphan and destitute Children of Agnel BalBhawan at Greater Noida",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Snehi",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 1084845.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": "Greater Noida"
+      },
+      "beneficiary": {
+        "beneficiary_count": 250,
+        "beneficiary_type": "Children"
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Children of Agnel BalBhawan at Greater Noida (Snehi)",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Snehi",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": null,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": "Greater Noida"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": null
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "PTC Centre of Excellence at IIT, Delhi",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": null,
+      "financial": {
+        "project_cost": null,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": "Delhi"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": null
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "PTC support to IIT Roorkee - for Drinking water Lab",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": null,
+      "financial": {
+        "project_cost": null,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": "Roorkee"
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": null,
+        "csr_sector": null
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [
+    19
+  ],
+  "high_level_summary": "The document outlines the agenda for the 20th CSR Committee meeting, including project proposals and ongoing project statuses."
+}

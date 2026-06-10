@@ -1,0 +1,186 @@
+{
+  "document_type": "CSR Agenda",
+  "meeting": {
+    "meeting_number": 25,
+    "meeting_date": "2025-01-15",
+    "financial_year": "2024-25"
+  },
+  "governance": {
+    "agenda_items": [
+      "Confirmation of Minutes of 24ᵗʰ CSR Committee Meeting",
+      "Action taken report on 24ᵗʰ CSR Committee Meeting",
+      "Status of Ongoing Projects",
+      "Action Plan FY 2024-25",
+      "New Project Proposal for Presentation to CSR Committee"
+    ],
+    "resolution_numbers": [],
+    "board_meeting_number": null,
+    "committee_name": "CSR Committee"
+  },
+  "projects": [
+    {
+      "project_id": null,
+      "project_name": "PTC Vishram Sadan",
+      "project_aliases": [],
+      "project_status": "In_Progress",
+      "ngo": {
+        "ngo_name": "Lady Hardinge Medical College",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 10000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 2500000.0,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Progress_Update",
+      "notes": "Project activities have started, and old structure has been demolished."
+    },
+    {
+      "project_id": null,
+      "project_name": "Strengthening Patient Care Services at Ramakrishna Mission Free Tuberculosis Clinic and Medical Centre",
+      "project_aliases": [],
+      "project_status": "Under_Consideration",
+      "ngo": {
+        "ngo_name": "Ramakrishna Mission",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 5503570.0,
+        "approved_cost": null,
+        "disbursed_amount": null,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": "Delhi",
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": "Revised proposal is put before CSR Committee."
+    },
+    {
+      "project_id": null,
+      "project_name": "Education Initiative",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "NGO for Education",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 5000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 1200000.0,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Education"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Health Awareness Campaign",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Health NGO",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 3000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 800000.0,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "i",
+        "csr_sector": "Healthcare"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    },
+    {
+      "project_id": null,
+      "project_name": "Environmental Sustainability Project",
+      "project_aliases": [],
+      "project_status": "Proposed",
+      "ngo": {
+        "ngo_name": "Green Earth NGO",
+        "ngo_type": null,
+        "registration_date": null
+      },
+      "financial": {
+        "project_cost": 4000000.0,
+        "approved_cost": null,
+        "disbursed_amount": 1000000.0,
+        "balance_amount": null
+      },
+      "geography": {
+        "state": null,
+        "district": null,
+        "city": null
+      },
+      "beneficiary": {
+        "beneficiary_count": null,
+        "beneficiary_type": null
+      },
+      "classification": {
+        "csr_schedule": "ii",
+        "csr_sector": "Environment"
+      },
+      "lifecycle_stage": "Proposal",
+      "notes": null
+    }
+  ],
+  "references_to_prior_meetings": [
+    24
+  ],
+  "high_level_summary": "The document outlines the agenda for the 25th CSR Committee meeting, including project proposals and ongoing project statuses. It also discusses the action plan for FY 2024-25."
+}

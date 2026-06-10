@@ -1,0 +1,19 @@
+# Keep the build context small (raw PDFs are 100+ MB and not needed in images;
+# they live in ./data which production mounts as a volume anyway).
+data/raw_docs/*
+!data/raw_docs/.gitkeep
+data/logs/*
+!data/logs/.gitkeep
+data/_debug/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.idea/
+.vscode/
+*.log
+caddy_data/
+caddy_config/
+.git/
+.env.env.bak
