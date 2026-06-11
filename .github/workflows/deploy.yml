@@ -1,0 +1,40 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: SSH deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: SSH and run deploy.sh
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          command_timeout: 12m
+          script: |
+            set -euo pipefail
+            VPS_PATH="${{ secrets.VPS_PATH }}"
+            if [ ! -d "$VPS_PATH/.git" ]; then
+              echo "ERROR: $VPS_PATH is not a git repo. Clone first: git clone <repo> $VPS_PATH" >&2
+              exit 1
+            fi
+            cd "$VPS_PATH"
+            echo "==> Pulling latest"
+            git fetch --all --prune
+            git reset --hard origin/${{ github.ref_name }}
+            echo "==> Running scripts/deploy.sh"
+            bash scripts/deploy.sh
+            echo "==> Health check"
+            curl -fsS http://localhost:8000/health || (docker compose logs --tail=50 app && exit 1)

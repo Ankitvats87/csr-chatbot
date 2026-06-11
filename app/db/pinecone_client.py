@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from pinecone import Pinecone, ServerlessSpec
@@ -18,20 +19,41 @@ class PineconeClient:
         self._index = None
 
     def connect(self) -> None:
-        try:
-            self._pc = Pinecone(api_key=self.settings.pinecone_api_key)
-            self._ensure_index()
-            self._index = self._pc.Index(self.settings.pinecone_index_name)
-            logger.info(
-                "pinecone connected",
-                extra={
-                    "index": self.settings.pinecone_index_name,
-                    "namespace": self.settings.pinecone_namespace,
-                },
-            )
-        except Exception as e:
-            logger.error(f"Failed to connect to Pinecone on startup: {e}")
-            self._index = None
+        """Connect with bounded retries. Transient SSL EOFs and 5xx during
+        startup should not leave us in a permanently broken state — the index
+        is known to exist, so we always optimistically bind to it and let
+        per-query retries handle the occasional network blip."""
+        last_err: Optional[Exception] = None
+        for attempt in range(1, 4):
+            try:
+                self._pc = Pinecone(api_key=self.settings.pinecone_api_key)
+                try:
+                    self._ensure_index()
+                except Exception as e:
+                    logger.warning(
+                        "pinecone _ensure_index failed — binding to index directly",
+                        extra={"err": str(e)[:200], "attempt": attempt},
+                    )
+                self._index = self._pc.Index(self.settings.pinecone_index_name)
+                logger.info(
+                    "pinecone connected",
+                    extra={
+                        "index": self.settings.pinecone_index_name,
+                        "namespace": self.settings.pinecone_namespace,
+                        "attempt": attempt,
+                    },
+                )
+                return
+            except Exception as e:
+                last_err = e
+                logger.warning(
+                    "pinecone connect attempt failed",
+                    extra={"attempt": attempt, "err": str(e)[:200]},
+                )
+                time.sleep(2 ** attempt)
+
+        logger.error(f"Failed to connect to Pinecone after 3 attempts: {last_err}")
+        self._index = None
 
     def _ensure_index(self) -> None:
         names = {idx.name for idx in self._pc.list_indexes()}

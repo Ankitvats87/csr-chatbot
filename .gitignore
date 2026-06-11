@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 __pycache__/
 *.pyc
 *.pyo
@@ -15,5 +17,9 @@ data/logs/*
 !data/logs/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+data/backup_*/
+data/v2_chunk_store.json
+data/_debug/
+audit_reports/
 caddy_data/
 caddy_config/
