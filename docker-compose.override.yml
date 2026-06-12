@@ -1,0 +1,12 @@
+services:
+  app:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.csrbot.rule=Host(`srv988340.hstgr.cloud`)
+      - traefik.http.routers.csrbot.entrypoints=websecure
+      - traefik.http.routers.csrbot.tls=true
+      - traefik.http.routers.csrbot.tls.certresolver=letsencrypt
+      - traefik.http.services.csrbot.loadbalancer.server.port=8000
+
+  caddy:
+    profiles: ["disabled"]

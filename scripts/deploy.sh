@@ -29,8 +29,12 @@ done
 echo "==> Building app image"
 docker compose build app
 
+echo "==> Removing orphan containers (e.g. caddy when disabled by profile)"
+docker compose down --remove-orphans 2>/dev/null || true
+docker rm -f csrbot-caddy 2>/dev/null || true
+
 echo "==> Starting stack"
-docker compose up -d
+docker compose up -d --remove-orphans
 
 echo "==> Waiting for app health (up to 60s)"
 for i in $(seq 1 30); do
