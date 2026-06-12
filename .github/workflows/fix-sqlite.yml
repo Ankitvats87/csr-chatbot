@@ -1,0 +1,73 @@
+name: Fix Corrupt SQLite on VPS
+
+on:
+  push:
+    paths:
+      - ".github/workflows/fix-sqlite.yml"
+  workflow_dispatch: {}
+
+jobs:
+  fix:
+    name: Replace corrupt DB + restore admin + verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: SSH fix
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          command_timeout: 8m
+          script: |
+            set -uo pipefail
+            cd /opt/csr-bot
+
+            echo "===== 1. KILL STRAY HOST UVICORN (port 8080, outside Docker) ====="
+            pkill -f 'uvicorn app.main:app --host 0.0.0.0 --port 8080' && echo "killed" || echo "no stray process found"
+
+            echo ""
+            echo "===== 2. STOP CONTAINERS ====="
+            docker compose stop app ingestion
+
+            echo ""
+            echo "===== 3. QUARANTINE CORRUPT DATABASE ====="
+            TS=$(date +%Y%m%d_%H%M%S)
+            mkdir -p data/sqlite/corrupt_backup
+            for f in app.db app.db-wal app.db-shm app.db-journal; do
+              [ -f "data/sqlite/$f" ] && mv "data/sqlite/$f" "data/sqlite/corrupt_backup/${f}.${TS}" && echo "moved $f"
+            done
+            ls -la data/sqlite/
+
+            echo ""
+            echo "===== 4. RESTART (app recreates fresh schema) ====="
+            docker compose up -d app ingestion
+            for i in $(seq 1 30); do
+              curl -fsS http://127.0.0.1:8000/health >/dev/null 2>&1 && break
+              sleep 2
+            done
+            curl -fsS http://127.0.0.1:8000/health || (docker compose logs --tail=50 app; exit 1)
+
+            echo ""
+            echo "===== 5. RESTORE ADMIN: /start as owner (auto-claims admin on fresh DB) ====="
+            curl -4 -s -X POST http://127.0.0.1:8000/webhook/telegram \
+              -H "Content-Type: application/json" \
+              -H "X-Telegram-Bot-Api-Secret-Token: csr_bot" \
+              -d '{"update_id":10,"message":{"message_id":10,"from":{"id":8549159845,"first_name":"Spark"},"chat":{"id":8549159845,"type":"private"},"date":1750000000,"text":"/start"}}'
+            echo ""
+            sleep 8
+
+            echo ""
+            echo "===== 6. LIVE TEST: replay the failing question ====="
+            curl -4 -s -X POST http://127.0.0.1:8000/webhook/telegram \
+              -H "Content-Type: application/json" \
+              -H "X-Telegram-Bot-Api-Secret-Token: csr_bot" \
+              -d '{"update_id":11,"message":{"message_id":11,"from":{"id":8549159845,"first_name":"Spark"},"chat":{"id":8549159845,"type":"private"},"date":1750000000,"text":"Agenda of 26 CSR meeting"}}'
+            echo ""
+            echo "(waiting 60s for full pipeline...)"
+            sleep 60
+
+            echo ""
+            echo "===== 7. APP LOGS (verify no errors, answer sent) ====="
+            docker compose logs --tail=60 app 2>&1 | tail -60
