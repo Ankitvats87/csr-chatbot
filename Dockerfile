@@ -15,6 +15,7 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY app ./app
+COPY scripts ./scripts
 
 # Persistent volumes for sqlite + logs are mounted by docker-compose.
 RUN mkdir -p /app/data/sqlite /app/data/logs /app/data/raw_docs
