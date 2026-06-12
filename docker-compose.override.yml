@@ -1,5 +1,7 @@
 services:
   app:
+    ports:
+      - "127.0.0.1:8000:8000"
     labels:
       - traefik.enable=true
       - traefik.http.routers.csrbot.rule=Host(`srv988340.hstgr.cloud`)
