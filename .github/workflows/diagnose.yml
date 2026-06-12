@@ -24,36 +24,45 @@ jobs:
             set -uo pipefail
             cd /opt/csr-bot
 
-            echo "===== 1. CONTAINER STATUS ====="
-            docker compose ps
+            echo "===== 1. WHO LISTENS ON PORT 8000 / 80 / 443 ====="
+            ss -ltnp | grep -E ':(8000|80|443)\s' || netstat -ltnp 2>/dev/null | grep -E ':(8000|80|443)\s' || echo "no ss/netstat output"
 
             echo ""
-            echo "===== 2. CHUNK STORE FILE (required by hybrid retrieval) ====="
-            ls -la data/v2_chunk_store.json 2>&1 || echo "MISSING: data/v2_chunk_store.json"
-            ls -la data/ | head -20
+            echo "===== 2. STRAY PYTHON/UVICORN PROCESSES ON HOST ====="
+            ps aux | grep -E 'uvicorn|python.*app' | grep -v grep || echo "none"
 
             echo ""
-            echo "===== 3. HEALTH ====="
-            curl -fsS http://localhost:8000/health || echo "HEALTH FAILED"
+            echo "===== 3. ALL CONTAINERS (incl. reverse proxy) ====="
+            docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
 
             echo ""
-            echo "===== 4. REPRODUCE: send test query as AUTHORIZED user ====="
-            curl -s -X POST http://localhost:8000/webhook/telegram \
+            echo "===== 4. IPv4 vs IPv6 HEALTH ====="
+            echo "--- IPv4 127.0.0.1:8000 ---"
+            curl -4 -fsS http://127.0.0.1:8000/health || echo "IPv4 FAILED"
+            echo ""
+            echo "--- IPv6 [::1]:8000 ---"
+            curl -6 -fsS "http://[::1]:8000/health" || echo "IPv6 FAILED (nothing on ::1 — good)"
+
+            echo ""
+            echo "===== 5. TELEGRAM getWebhookInfo (what Telegram sees) ====="
+            TOKEN=$(grep '^TELEGRAM_BOT_TOKEN=' .env | cut -d= -f2-)
+            curl -s "https://api.telegram.org/bot${TOKEN}/getWebhookInfo" | python3 -c "
+            import json,sys
+            d=json.load(sys.stdin).get('result',{})
+            for k in ('url','pending_update_count','last_error_date','last_error_message','ip_address'):
+                print(f'{k}: {d.get(k)}')
+            "
+
+            echo ""
+            echo "===== 6. REPRODUCE via explicit IPv4 as authorized user ====="
+            curl -4 -s -X POST http://127.0.0.1:8000/webhook/telegram \
               -H "Content-Type: application/json" \
               -H "X-Telegram-Bot-Api-Secret-Token: csr_bot" \
-              -d '{"update_id":2,"message":{"message_id":2,"from":{"id":8549159845,"first_name":"Spark"},"chat":{"id":8549159845,"type":"private"},"date":1750000000,"text":"Agenda of 26 CSR meeting"}}'
+              -d '{"update_id":3,"message":{"message_id":3,"from":{"id":8549159845,"first_name":"Spark"},"chat":{"id":8549159845,"type":"private"},"date":1750000000,"text":"Agenda of 26 CSR meeting"}}'
             echo ""
-            echo "(waiting 35s for async pipeline to finish...)"
+            echo "(waiting 35s for async pipeline...)"
             sleep 35
 
             echo ""
-            echo "===== 5. APP LOGS (last 250 lines) ====="
-            docker compose logs --tail=250 app 2>&1 | tail -250
-
-            echo ""
-            echo "===== 5b. INGESTION LOGS (unhealthy container, last 40 lines) ====="
-            docker compose logs --tail=40 ingestion 2>&1 | tail -40
-
-            echo ""
-            echo "===== 6. KEY ENV FLAGS in container ====="
-            docker compose exec -T app printenv | grep -E '^(RAG_VERSION|ENABLE_|LLM_PROVIDER|CHUNK_STORE_PATH|PINECONE_NAMESPACE|TOP_K)' | sort
+            echo "===== 7. APP LOGS since reproduction (last 200 lines) ====="
+            docker compose logs --tail=200 app 2>&1 | tail -200
