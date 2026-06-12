@@ -11,6 +11,8 @@ venv/
 *.log
 data/sqlite/*.db
 data/sqlite/*.db-journal
+data/sqlite/*.db-shm
+data/sqlite/*.db-wal
 data/raw_docs/*
 !data/raw_docs/.gitkeep
 data/logs/*

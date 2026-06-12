@@ -104,25 +104,63 @@ You can leave `TELEGRAM_WEBHOOK_SECRET` blank — `setup_webhook.sh` will genera
 
 ## Localhost Development & Testing
 
-To test and review the bot entirely on your local machine without needing a VPS or public HTTPS:
+The project runs two bots simultaneously — **never touching the live bot** while you develop:
 
-1. **Start the Local Server**:
-   ```bash
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload --port 8000
+| Bot | Token source | How it runs |
+|---|---|---|
+| `@spark63bot` (production) | GitHub Secrets → VPS | Webhook on `srv988340.hstgr.cloud` via Docker |
+| `@csr_localbot` (development) | Local `.env` on your laptop | Polling bridge `scripts/local_poll.py` |
+
+### One-time setup
+
+1. Create a dev bot via `@BotFather` on Telegram → `/newbot`. Copy the token.
+2. Copy `.env.example` to `.env` and paste the dev token:
+   ```env
+   TELEGRAM_BOT_TOKEN=<your-dev-bot-token>
+   PRODUCTION_BOT_USERNAME=spark63bot
    ```
-   *The FastAPI backend is now running at `http://localhost:8000`.*
-
-2. **Launch the Local Polling Bridge**:
-   In a separate terminal, run:
-   ```bash
-   python scripts/local_poll.py
+3. Install the clean virtual environment:
+   ```powershell
+   python -m venv C:\Users\<you>\venvs\csrbot
+   C:\Users\<you>\venvs\csrbot\Scripts\pip install -r requirements.txt
    ```
-   This script deletes any remote webhook configuration and relays messages from Telegram directly to your localhost web server, passing the required authorization headers.
 
-3. **Access the Admin Dashboard**:
-   Open a browser and go to `http://localhost:8000/admin`.
-   Log in with the credentials set in your `.env` (`ADMIN_USERNAME` and `ADMIN_PASSWORD`).
+### Daily workflow (Windows — one command)
+
+```powershell
+# From the telegram-rag-bot folder:
+powershell -ExecutionPolicy Bypass -File scripts\run_local.ps1
+```
+
+This starts the FastAPI server on `http://localhost:8000`, waits for it to be ready, then starts the polling bridge. Send messages to `@csr_localbot` on Telegram — the bot answers via the local pipeline.
+
+**Safety guard:** `scripts/local_poll.py` calls `/getMe` on startup and refuses to start if the token belongs to `@spark63bot`. This prevents accidentally taking the live webhook offline.
+
+### Admin dashboard (local)
+
+Open `http://localhost:8000/admin` — same UI as production.
+
+---
+
+## CI/CD — Auto-deploy on push to `main`
+
+Every `git push origin main` triggers GitHub Actions (`.github/workflows/deploy.yml`), which:
+
+1. SSHs into `srv988340.hstgr.cloud` as `root`
+2. Pulls the latest code into `/opt/csr-bot`
+3. Runs `docker compose build --pull && docker compose up -d`
+
+The live bot is updated within ~2 minutes of a push. No manual VPS login needed.
+
+**Required GitHub Secrets** (Settings → Secrets → Actions):
+
+| Secret | Value |
+|---|---|
+| `VPS_HOST` | `srv988340.hstgr.cloud` |
+| `VPS_USER` | `root` |
+| `VPS_SSH_KEY` | Private key whose public half is in VPS `~/.ssh/authorized_keys` |
+| `TELEGRAM_BOT_TOKEN` | Production bot token (`@spark63bot`) |
+| _(all other `.env` vars)_ | Same as the VPS `.env` file |
 
 ---
 
@@ -257,32 +295,41 @@ python scripts/ingest_local_file.py "data/raw_docs/Test CSR 21_26 .txt"
 | Caddy fails to get a cert | Confirm ports 80 + 443 are open and DNS resolves to this VPS, and `ACME_EMAIL` is a real address |
 | "You are not authorised" | Send `/start` first → admin approves. Or add your chat_id to `ADMIN_CHAT_IDS` in `.env` and restart |
 | Replies are fallback "I don't have that information" | Cosine similarity scores for relevant chunks are often low (0.52-0.58). Lower `SIMILARITY_THRESHOLD=0.50` in `.env` and restart uvicorn |
+| `local_poll.py` gets 403 Forbidden from Telegram | Corporate/office firewall blocks Telegram API. Switch to a phone hotspot — the app itself still works, only the polling bridge is blocked. |
+| `local_poll.py` refuses to start ("PRODUCTION bot") | Token in `.env` is the production token. Create a separate dev bot via `@BotFather` and use that token locally. |
 
 ---
 
 ## Architecture
 
 ```
-Telegram → Caddy (TLS) → FastAPI /webhook/telegram (csrbot-app)
-                              │
-                              ▼
-                      ┌── RAGService
-                      │   ├── EmbeddingService (OpenAI)
-                      │   ├── VectorService (Pinecone, top-K=5, ≥0.50)
-                      │   ├── MemoryService (SQLite, last 10 turns)
-                      │   ├── PromptService
-                      │   └── ResponseService (OpenAI gpt-4o-mini)
-                      │
-                      ├── AccessService (allowlist, admin commands, inline approval)
-                      └── TelegramService (Bot API)
+PRODUCTION (VPS — srv988340.hstgr.cloud)
+─────────────────────────────────────────
+@spark63bot → Caddy (TLS) → FastAPI /webhook/telegram (csrbot-app)
+                                   │
+                                   ▼
+                           ┌── RAGService
+                           │   ├── EmbeddingService (OpenAI text-embedding-3-small)
+                           │   ├── VectorService (Pinecone top-K=5, ≥0.50, BM25 hybrid)
+                           │   ├── MemoryService (SQLite, last 5 turns)
+                           │   ├── LLM Reranker
+                           │   └── ResponseService (OpenAI gpt-4o-mini)
+                           │
+                           ├── AccessService (allowlist, admin commands, inline approval)
+                           └── TelegramService (Bot API)
 
-                        (separate container: csrbot-ingestion)
-                        APScheduler every 2 min
-                              │
-                              ▼
-                        IngestionService
-                        ├── DriveLoader (list + download)
-                        ├── Chunker (PDF/DOCX/TXT/CSV → segments)
-                        ├── embed_and_upsert (batched + 5s sleep)
-                        └── delete_by_file_id on disappearance
+                           (separate container: csrbot-ingestion)
+                           APScheduler every 2 min → Google Drive
+                           → Chunker → embed_and_upsert → Pinecone
+
+LOCAL DEV (laptop)
+──────────────────
+@csr_localbot → scripts/local_poll.py (polling bridge)
+                       │ relays JSON to
+                       ▼
+               FastAPI localhost:8000  (same app code)
+
+CI/CD
+─────
+git push origin main → GitHub Actions → SSH to VPS → docker compose up -d
 ```

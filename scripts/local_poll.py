@@ -18,6 +18,33 @@ if not TOKEN:
 if ":" not in TOKEN:
     raise RuntimeError("TELEGRAM_BOT_TOKEN is malformed. Expected format: <bot_id>:<secret>")
 
+# ---- Production-takeover guard ----------------------------------------
+# Polling DELETES the bot's webhook, which disconnects the production VPS
+# deployment for every user. Local development must use a separate dev bot
+# token (create one via @BotFather, put it in your local .env). If this
+# token belongs to the production bot, refuse to start unless explicitly
+# forced with ALLOW_PROD_POLLING=1.
+PROD_BOT_USERNAME = os.getenv("PRODUCTION_BOT_USERNAME", "spark63bot").lstrip("@").lower()
+try:
+    me = httpx.get(
+        f"https://api.telegram.org/bot{TOKEN}/getMe", verify=False, timeout=15.0
+    ).json()
+    bot_username = (me.get("result") or {}).get("username", "")
+except Exception as e:
+    raise RuntimeError(f"Could not verify bot identity via getMe: {e}")
+
+print(f"Bot identity:   @{bot_username}")
+if bot_username.lower() == PROD_BOT_USERNAME and os.getenv("ALLOW_PROD_POLLING") != "1":
+    raise SystemExit(
+        f"\nREFUSING TO START: @{bot_username} is the PRODUCTION bot.\n"
+        "Starting local polling would delete its webhook and take the live\n"
+        "VPS bot offline for all users.\n\n"
+        "Fix: create a dev bot with @BotFather and put its token in your\n"
+        "local .env as TELEGRAM_BOT_TOKEN. (Override only if you really\n"
+        "mean it: set ALLOW_PROD_POLLING=1)"
+    )
+# -----------------------------------------------------------------------
+
 print("=" * 60)
 print("             SPARK63 LOCAL TG-POLLING AGENT")
 print("=" * 60)
