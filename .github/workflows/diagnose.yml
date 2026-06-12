@@ -1,0 +1,55 @@
+name: Diagnose VPS Bot Error
+
+on:
+  push:
+    paths:
+      - ".github/workflows/diagnose.yml"
+  workflow_dispatch: {}
+
+jobs:
+  diagnose:
+    name: Capture VPS logs + reproduce error
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: SSH diagnose
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          command_timeout: 8m
+          script: |
+            set -uo pipefail
+            cd /opt/csr-bot
+
+            echo "===== 1. CONTAINER STATUS ====="
+            docker compose ps
+
+            echo ""
+            echo "===== 2. CHUNK STORE FILE (required by hybrid retrieval) ====="
+            ls -la data/v2_chunk_store.json 2>&1 || echo "MISSING: data/v2_chunk_store.json"
+            ls -la data/ | head -20
+
+            echo ""
+            echo "===== 3. HEALTH ====="
+            curl -fsS http://localhost:8000/health || echo "HEALTH FAILED"
+
+            echo ""
+            echo "===== 4. REPRODUCE: send test query through webhook ====="
+            curl -s -X POST http://localhost:8000/webhook/telegram \
+              -H "Content-Type: application/json" \
+              -H "X-Telegram-Bot-Api-Secret-Token: csr_bot" \
+              -d '{"update_id":1,"message":{"message_id":1,"from":{"id":999999,"first_name":"Diag"},"chat":{"id":999999,"type":"private"},"date":1750000000,"text":"Agenda of 26 CSR meeting"}}'
+            echo ""
+            echo "(waiting 25s for async pipeline to finish...)"
+            sleep 25
+
+            echo ""
+            echo "===== 5. APP LOGS (last 150 lines) ====="
+            docker compose logs --tail=150 app 2>&1 | tail -150
+
+            echo ""
+            echo "===== 6. KEY ENV FLAGS in container ====="
+            docker compose exec -T app printenv | grep -E '^(RAG_VERSION|ENABLE_|LLM_PROVIDER|CHUNK_STORE_PATH|PINECONE_NAMESPACE|TOP_K)' | sort
