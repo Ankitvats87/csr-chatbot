@@ -11,30 +11,55 @@ concurrency:
 
 jobs:
   deploy:
-    name: SSH deploy
+    name: SSH deploy + write .env
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: SSH and run deploy.sh
+      - name: SSH deploy
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
+          PINECONE_NAMESPACE: ${{ secrets.PINECONE_NAMESPACE }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
+          envs: TELEGRAM_BOT_TOKEN,OPENAI_API_KEY,PINECONE_API_KEY,PINECONE_INDEX_NAME,PINECONE_NAMESPACE
           command_timeout: 12m
           script: |
             set -euo pipefail
-            VPS_PATH="${{ secrets.VPS_PATH }}"
-            if [ ! -d "$VPS_PATH/.git" ]; then
-              echo "ERROR: $VPS_PATH is not a git repo. Clone first: git clone <repo> $VPS_PATH" >&2
-              exit 1
-            fi
-            cd "$VPS_PATH"
+            cd /opt/csr-bot
+
+            # Write .env from GitHub secrets on every deploy (idempotent, safe)
+            cat > .env << ENVEOF
+            TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+            OPENAI_API_KEY=${OPENAI_API_KEY}
+            PINECONE_API_KEY=${PINECONE_API_KEY}
+            PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME}
+            PINECONE_NAMESPACE=${PINECONE_NAMESPACE}
+            PINECONE_CLOUD=aws
+            PINECONE_REGION=us-east-1
+            SIMILARITY_THRESHOLD=0.50
+            ENABLE_INTELLIGENCE_LAYER=true
+            ENABLE_HYBRID_RETRIEVAL=true
+            ENABLE_RERANKER=true
+            HYBRID_BM25_TOP_K=25
+            RERANK_CANDIDATES=30
+            CONTEXT_MAX_CHUNKS=24
+            LLM_MAX_TOKENS=1600
+            CHUNK_STORE_PATH=data/v2_chunk_store.json
+            ENVEOF
+
             echo "==> Pulling latest"
             git fetch --all --prune
             git reset --hard origin/${{ github.ref_name }}
-            echo "==> Running scripts/deploy.sh"
+
+            echo "==> Running deploy.sh"
             bash scripts/deploy.sh
+
             echo "==> Health check"
             curl -fsS http://localhost:8000/health || (docker compose logs --tail=50 app && exit 1)
