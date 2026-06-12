@@ -4,7 +4,7 @@ import httpx
 
 from app.utils.env import Settings
 from app.utils.logger import get_logger
-from app.utils.telegram_format import clean_for_telegram
+from app.utils.telegram_format import format_for_telegram_html, html_to_plain
 from app.utils.validators import split_telegram_message
 
 logger = get_logger(__name__)
@@ -61,22 +61,33 @@ class TelegramService:
 
     async def send_message(self, chat_id: int, text: str) -> None:
         """Send a text message. Long messages are split on paragraph boundaries
-        to stay under Telegram's 4096-char limit. All errors are caught and
-        logged so a failed send never crashes the caller (we run inside
+        to stay under Telegram's 4096-char limit. Sent as HTML (real bold) with
+        a plain-text retry if Telegram rejects the markup. All errors are caught
+        and logged so a failed send never crashes the caller (we run inside
         BackgroundTasks).
         """
         if not text:
             return
-        cleaned = clean_for_telegram(text)
-        for part in split_telegram_message(cleaned):
-            await self._post(
+        formatted = format_for_telegram_html(text)
+        for part in split_telegram_message(formatted):
+            resp = await self._post(
                 "sendMessage",
                 {
                     "chat_id": chat_id,
                     "text": part,
+                    "parse_mode": "HTML",
                     "disable_web_page_preview": True,
                 },
             )
+            if resp is None or not resp.get("ok", False):
+                await self._post(
+                    "sendMessage",
+                    {
+                        "chat_id": chat_id,
+                        "text": html_to_plain(part),
+                        "disable_web_page_preview": True,
+                    },
+                )
 
 
     async def send_typing(self, chat_id: int) -> None:
