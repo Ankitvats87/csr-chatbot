@@ -20,38 +20,78 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
           PINECONE_NAMESPACE: ${{ secrets.PINECONE_NAMESPACE }}
+          GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.GOOGLE_DRIVE_CLIENT_ID }}
+          GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.GOOGLE_DRIVE_CLIENT_SECRET }}
+          GOOGLE_DRIVE_REFRESH_TOKEN: ${{ secrets.GOOGLE_DRIVE_REFRESH_TOKEN }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          LLAMA_CLOUD_API_KEY: ${{ secrets.LLAMA_CLOUD_API_KEY }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
-          envs: TELEGRAM_BOT_TOKEN,OPENAI_API_KEY,PINECONE_API_KEY,PINECONE_INDEX_NAME,PINECONE_NAMESPACE
+          envs: TELEGRAM_BOT_TOKEN,OPENAI_API_KEY,OPENROUTER_API_KEY,PINECONE_API_KEY,PINECONE_INDEX_NAME,PINECONE_NAMESPACE,GOOGLE_DRIVE_CLIENT_ID,GOOGLE_DRIVE_CLIENT_SECRET,GOOGLE_DRIVE_REFRESH_TOKEN,GOOGLE_DRIVE_FOLDER_ID,LLAMA_CLOUD_API_KEY
           command_timeout: 12m
           script: |
             set -euo pipefail
             cd /opt/csr-bot
 
-            # Write .env from GitHub secrets on every deploy (idempotent, safe)
+            # Write .env from GitHub secrets on every deploy (idempotent)
             cat > .env << ENVEOF
-            TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
             OPENAI_API_KEY=${OPENAI_API_KEY}
+            OPENAI_CHAT_MODEL=gpt-4o-mini
+            OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+
+            LLM_PROVIDER=openai
+            OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+            OPENROUTER_MODEL=moonshotai/kimi-k2.6:free
+            OPENROUTER_FALLBACK_TO_OPENAI=false
+
             PINECONE_API_KEY=${PINECONE_API_KEY}
             PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME}
             PINECONE_NAMESPACE=${PINECONE_NAMESPACE}
             PINECONE_CLOUD=aws
             PINECONE_REGION=us-east-1
+
+            TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+            TELEGRAM_WEBHOOK_SECRET=csr_bot
+
+            ADMIN_USERNAME=admin
+            ADMIN_PASSWORD=admin
+
+            MEMORY_WINDOW=5
+            TOP_K=15
             SIMILARITY_THRESHOLD=0.50
+            CHUNK_SIZE=1000
+            CHUNK_OVERLAP=150
+
+            LOG_LEVEL=INFO
+            APP_PORT=8000
+            SQLITE_PATH=data/sqlite/app.db
+
+            PUBLIC_DOMAIN=srv988340.hstgr.cloud
+            WEBHOOK_PATH=/webhook/telegram
+
+            GOOGLE_DRIVE_CLIENT_ID=${GOOGLE_DRIVE_CLIENT_ID}
+            GOOGLE_DRIVE_CLIENT_SECRET=${GOOGLE_DRIVE_CLIENT_SECRET}
+            GOOGLE_DRIVE_REFRESH_TOKEN=${GOOGLE_DRIVE_REFRESH_TOKEN}
+            GOOGLE_DRIVE_FOLDER_ID=${GOOGLE_DRIVE_FOLDER_ID}
+
+            LLAMA_CLOUD_API_KEY=${LLAMA_CLOUD_API_KEY}
+
+            RAG_VERSION=v2
             ENABLE_INTELLIGENCE_LAYER=true
             ENABLE_HYBRID_RETRIEVAL=true
             ENABLE_RERANKER=true
             HYBRID_BM25_TOP_K=25
             RERANK_CANDIDATES=30
             CONTEXT_MAX_CHUNKS=24
-            LLM_MAX_TOKENS=1600
             CHUNK_STORE_PATH=data/v2_chunk_store.json
+            LLM_MAX_TOKENS=1600
             ENVEOF
 
             echo "==> Pulling latest"
