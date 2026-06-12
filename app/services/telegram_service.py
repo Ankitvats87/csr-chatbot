@@ -4,6 +4,7 @@ import httpx
 
 from app.utils.env import Settings
 from app.utils.logger import get_logger
+from app.utils.telegram_format import clean_for_telegram
 from app.utils.validators import split_telegram_message
 
 logger = get_logger(__name__)
@@ -66,7 +67,8 @@ class TelegramService:
         """
         if not text:
             return
-        for part in split_telegram_message(text):
+        cleaned = clean_for_telegram(text)
+        for part in split_telegram_message(cleaned):
             await self._post(
                 "sendMessage",
                 {
