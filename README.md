@@ -297,6 +297,8 @@ python scripts/ingest_local_file.py "data/raw_docs/Test CSR 21_26 .txt"
 | Replies are fallback "I don't have that information" | Cosine similarity scores for relevant chunks are often low (0.52-0.58). Lower `SIMILARITY_THRESHOLD=0.50` in `.env` and restart uvicorn |
 | `local_poll.py` gets 403 Forbidden from Telegram | Corporate/office firewall blocks Telegram API. Switch to a phone hotspot — the app itself still works, only the polling bridge is blocked. |
 | `local_poll.py` refuses to start ("PRODUCTION bot") | Token in `.env` is the production token. Create a separate dev bot via `@BotFather` and use that token locally. |
+| Every query replies "Sorry — something went wrong" with `database disk image is malformed` in logs | SQLite DB corrupted. Run the **Fix Corrupt SQLite on VPS** workflow (Actions → Run workflow). It quarantines the corrupt DB, restarts with a fresh one, and re-claims admin. Never commit `app.db*` files — they are gitignored for this reason. |
+| GitHub Actions SSH step fails with `i/o timeout` | Two workflows SSHing at once (e.g. deploy + diagnose from the same push). The VPS accepts one connection at a time — re-run the failed workflow alone via workflow_dispatch. |
 
 ---
 

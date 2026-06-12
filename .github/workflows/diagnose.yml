@@ -1,9 +1,8 @@
 name: Diagnose VPS Bot Error
 
+# Manual trigger only: a push would also trigger deploy.yml, and the VPS
+# accepts only one SSH connection at a time — parallel runs time out.
 on:
-  push:
-    paths:
-      - ".github/workflows/diagnose.yml"
   workflow_dispatch: {}
 
 jobs:

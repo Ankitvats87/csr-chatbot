@@ -1,9 +1,8 @@
 name: Fix Corrupt SQLite on VPS
 
+# Manual trigger only: a push would also trigger deploy.yml, and the VPS
+# accepts only one SSH connection at a time — parallel runs time out.
 on:
-  push:
-    paths:
-      - ".github/workflows/fix-sqlite.yml"
   workflow_dispatch: {}
 
 jobs:
@@ -25,7 +24,13 @@ jobs:
             cd /opt/csr-bot
 
             echo "===== 1. KILL STRAY HOST UVICORN (port 8080, outside Docker) ====="
-            pkill -f 'uvicorn app.main:app --host 0.0.0.0 --port 8080' && echo "killed" || echo "no stray process found"
+            # Bracket pattern so the grep (and this script's own cmdline) never match themselves.
+            STRAY=$(ps -eo pid,args | grep '[u]vicorn app.main:app --host 0.0.0.0 --port 8080' | awk '{print $1}')
+            if [ -n "$STRAY" ]; then
+              kill $STRAY && echo "killed stray uvicorn pid(s): $STRAY"
+            else
+              echo "no stray process found"
+            fi
 
             echo ""
             echo "===== 2. STOP CONTAINERS ====="
