@@ -254,6 +254,42 @@ class DocumentDirectoryService:
     def document_names_for_meeting(self, ordinal: int) -> List[str]:
         return [e.document_name for e in self.all() if e.meeting_number == ordinal]
 
+    # ---------- meeting scoping & cross-check ----------
+    def meeting_number_for_source(self, raw: Optional[str]) -> Optional[int]:
+        """Which meeting does a retrieved chunk's source document belong to?
+        Resolves a raw Pinecone label (file-id, '<id>.pdf', or readable name)
+        to its meeting number — used to keep a 'meeting N' answer scoped to
+        meeting-N documents only (no neighbour-meeting leakage)."""
+        if not raw:
+            return None
+        s = raw.strip()
+        base = re.sub(r"\.(pdf|json|docx?|txt)$", "", s, flags=re.IGNORECASE)
+        meta = self._v2_meta_map().get(base) or self._v2_meta_map().get(s)
+        if meta and meta.get("meeting_number") is not None:
+            return int(meta["meeting_number"])
+        for e in self.all():
+            if e.file_id in (base, s) or e.document_name == s:
+                return e.meeting_number
+        return None
+
+    def meeting_reference(self, mnum: int) -> Optional[str]:
+        """A compact authoritative fact line for a meeting, aggregated from the
+        extraction index — the second source the LLM cross-checks the chunks
+        against. Surfaces multiple conflicting dates rather than hiding them."""
+        metas = [m for m in self._v2_meta_map().values() if m.get("meeting_number") == mnum]
+        if not metas:
+            return None
+        dates = sorted({m["date"] for m in metas if m.get("date")})
+        types = sorted({m["doc_type"] for m in metas if m.get("doc_type")})
+        parts = [f"CSR Meeting {mnum}"]
+        if len(dates) == 1:
+            parts.append(f"date on record: {dates[0]}")
+        elif len(dates) > 1:
+            parts.append("dates on record: " + " / ".join(dates) + " (multiple — verify against the documents)")
+        if types:
+            parts.append("document types indexed: " + ", ".join(types))
+        return "; ".join(parts)
+
     # ---------- human-readable source labels ----------
     @staticmethod
     def _friendly_label(e: DirEntry) -> str:
