@@ -225,12 +225,14 @@ INSTRUCTIONS:
    - expenditure_lookup
    - allocation_lookup
    - timeline_lookup
+   - person_attendance
    - general_faq
 3. Extract any specific entities mentioned in the query:
    - meeting_number: integer (e.g. 26)
    - board_meeting_number: string or null
    - project_name: string or null
    - ngo_name: string or null
+   - person_name: string or null (full name of a committee member, attendee, or officer — e.g. "Dr. Manoj Kumar Jhawar")
    - resolution_number: string or null
    - agenda_item: string or null
    - financial_year: string or null (e.g. "2024-25")
@@ -256,6 +258,7 @@ JSON Schema:
     "board_meeting_number": null or string,
     "project_name": null or string,
     "ngo_name": null or string,
+    "person_name": null or string,
     "resolution_number": null or string,
     "agenda_item": null or string,
     "financial_year": null or string,
@@ -290,8 +293,8 @@ JSON Schema:
                 "intent": "general_faq",
                 "entities": {
                     "meeting_number": None, "board_meeting_number": None, "project_name": None,
-                    "ngo_name": None, "resolution_number": None, "agenda_item": None,
-                    "financial_year": None, "state": None, "district": None
+                    "ngo_name": None, "person_name": None, "resolution_number": None,
+                    "agenda_item": None, "financial_year": None, "state": None, "district": None
                 },
                 "confidence": 0.5,
                 "is_invalid": False,
@@ -419,10 +422,33 @@ JSON Schema:
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=15, metadata_filter=meeting_filter))
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=5))
 
+        elif intent == "person_attendance" or (entities.get("person_name") and not resolved_project and not resolved_ngo):
+            # Person-attendance: exhaustive cross-meeting search.
+            # People appear under many roles — "Member", "By Invitation", "CMD", "CFO" — so we
+            # use multiple query variants to ensure all role-tagged chunks surface, even if their
+            # cosine similarity to the original query is low.
+            person_name = entities.get("person_name") or rewritten_query
+            name_query_variants = [
+                f"{person_name} attended CSR committee meeting",
+                f"{person_name} By Invitation member CSR meeting",
+                f"attendance list {person_name} minutes",
+            ]
+            seen_person_keys: Set[str] = set()
+            for nq in name_query_variants:
+                nq_emb = self.embedder.embed(nq)
+                for c in self._query_pinecone(nq_emb, "csr_v2_enriched", top_k=20):
+                    key = c.chunk_id or f"{c.document_name}::{c.text[:50]}"
+                    if key not in seen_person_keys:
+                        seen_person_keys.add(key)
+                        chunks.append(c)
+            # Fill remaining context with primary embedding results
+            chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=10))
+            logger.info("person_attendance retrieval", extra={"person": person_name, "n_chunks": len(chunks)})
+
         else:
             # General standard multi-namespace retrieval
             chunks.extend(self._query_pinecone(embedding, "csr_project_master", top_k=4))
-            chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=10))
+            chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=15))
 
         # Deduplicate chunks
         seen = set()
@@ -552,7 +578,18 @@ INSTRUCTIONS:
      of presenting the letter as a project name.
 5. If the context contains a relevant table (budgets, allocations, project lists),
    reproduce the relevant rows as a markdown table with real figures.
-6. TEMPLATES — when the question is a broad meeting/project/NGO/timeline lookup,
+6. ATTENDANCE & COUNT QUERIES — when the user asks "how many meetings did X attend",
+   "which meetings did X attend", or "did X attend meeting Y":
+   - Scan EVERY chunk in the verified context for the person's name (first name, last name,
+     any variant — e.g. "Jhawar" matches "Dr. Manoj Kumar Jhawar").
+   - Include every meeting where the person appears in ANY role: Member, Chairperson,
+     CMD, CFO, "By Invitation", Invitee, or any other designation. All roles count.
+   - List each meeting found with its number and date.
+   - After listing, state the total count. If the DOCUMENT DIRECTORY shows more meetings
+     in the knowledge base than your chunks cover, add exactly one sentence:
+     "Note: Count is based on retrieved document chunks; additional meetings may exist
+     in the knowledge base."
+7. TEMPLATES — when the question is a broad meeting/project/NGO/timeline lookup,
    structure the answer with these layouts (filling every placeholder with REAL
    values from the context; omit a section if the context has nothing for it):
 
@@ -624,6 +661,12 @@ CRITICAL AUDITING RULES:
 8. **Answer Relevance**: If the draft answers a more generic question than the one
    asked (e.g. gives a meeting summary when the user asked for the annual action
    plan), rewrite it to address the user's actual question using the context.
+9. **Attendance Completeness**: If the question asks how many meetings a person
+   attended, scan the VERIFIED CONTEXT one more time. Check for the person's name
+   (and surname alone) in EVERY chunk — including chunks where they appear
+   "By Invitation", as CMD, CFO, or any other role. Each distinct meeting where
+   the name appears must be listed and counted. If the draft's count is lower than
+   the number of distinct meetings you can find, correct it.
 
 Output the final, verified, and polished answer. Do not include any meta-commentary, introductory remarks, or explanations. Output the final markdown response directly.
 """
