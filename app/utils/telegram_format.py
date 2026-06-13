@@ -30,8 +30,9 @@ _TABLE_SEP_RE = re.compile(r"^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$")
 _HTML_TAG_RE = re.compile(r"</?(?:b|i|code|pre)>")
 _NUMERIC_RE = re.compile(r"^-?\d+(?:[\d,]*\.\d+)?$")
 
-PRE_TABLE_WIDTH_LIMIT = 60
-PRE_TABLE_COL_MAX = 26
+PRE_TABLE_WIDTH_LIMIT = 40  # ~40 monospace chars fits mobile Telegram bubbles
+PRE_TABLE_COL_MAX = 16      # per-column natural cap before proportional shrink
+PRE_TABLE_COL_MIN = 4       # minimum readable column width
 
 
 def _is_numeric_like(cell: str) -> bool:
@@ -57,36 +58,49 @@ _TOTAL_KEYWORDS = {"total", "totals", "grand total", "sub total", "subtotal"}
 
 
 def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
-    """Render a GitHub-style markdown pipe table inside Telegram <pre>...</pre>.
+    """Render a GitHub-style pipe table inside <pre> sized to the mobile budget.
 
-    Format:
-        | #  | Entity            | Amount |
-        |----|-------------------|--------|
-        |  1 | PTC Vishram Sadan | 600.00 |
-        |    | TOTAL             | 999.00 |
-
-    Numeric columns are right-aligned, text columns left-aligned, long cells
-    truncated with … so the row stays mobile-friendly. A separator row is
-    inserted above any TOTAL row to visually anchor it."""
+    Column widths are content-driven (max of header + all cells, capped at
+    PRE_TABLE_COL_MAX). When the natural total exceeds the mobile budget, text
+    columns shrink proportionally while numeric columns keep their natural width.
+    Numeric columns are right-aligned; text columns left-aligned. A separator
+    row is inserted above any TOTAL row."""
     n = len(headers)
     norm_rows = [r + [""] * (n - len(r)) for r in rows]
 
     is_num = [
-        all(
-            (not r[i]) or r[i] in ("—", "-") or _is_numeric_like(r[i])
-            for r in norm_rows
-        )
+        all((not r[i]) or r[i] in ("—", "-") or _is_numeric_like(r[i]) for r in norm_rows)
         for i in range(n)
     ]
     abbr_headers = [_abbreviate_header(h) for h in headers]
 
-    widths = [
-        min(
-            max(len(abbr_headers[i]), *(len(r[i]) for r in norm_rows)) if norm_rows else len(abbr_headers[i]),
-            PRE_TABLE_COL_MAX,
-        )
-        for i in range(n)
-    ]
+    # Natural width: max of header and every cell, capped at col_max
+    natural: List[int] = []
+    for i in range(n):
+        w = len(abbr_headers[i])
+        for r in norm_rows:
+            w = max(w, len(r[i]) if i < len(r) else 0)
+        natural.append(min(w, PRE_TABLE_COL_MAX))
+
+    # Fit columns to mobile budget with proportional shrink
+    overhead = 3 * (n - 1) + 4  # pipe + space chars per row
+    budget = PRE_TABLE_WIDTH_LIMIT - overhead
+
+    if budget > 0 and sum(natural) > budget:
+        # Numeric cols keep their natural width; text cols share the remainder
+        num_reserved = sum(natural[i] for i in range(n) if is_num[i])
+        text_idxs = [i for i in range(n) if not is_num[i]]
+        text_budget = max(len(text_idxs) * PRE_TABLE_COL_MIN, budget - num_reserved)
+        text_natural_sum = sum(natural[i] for i in text_idxs) or 1
+        widths: List[int] = list(natural)
+        for i in text_idxs:
+            widths[i] = max(PRE_TABLE_COL_MIN, int(natural[i] * text_budget / text_natural_sum))
+        # If numeric cols alone blow the budget, proportionally shrink everything
+        if sum(widths) > budget:
+            total = sum(widths) or 1
+            widths = [max(PRE_TABLE_COL_MIN, int(w * budget / total)) for w in widths]
+    else:
+        widths = natural
 
     def fmt(cells: List[str]) -> str:
         parts: List[str] = []
@@ -100,7 +114,9 @@ def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
     body_lines: List[str] = [fmt(abbr_headers), sep]
     for r in norm_rows:
         first = (r[0] or "").strip().lower()
-        if first in _TOTAL_KEYWORDS or (not r[0] and any(s in (r[i] or "").strip().lower() for i in range(1, n) for s in _TOTAL_KEYWORDS)):
+        if first in _TOTAL_KEYWORDS or (
+            not r[0] and any(s in (r[i] or "").strip().lower() for i in range(1, n) for s in _TOTAL_KEYWORDS)
+        ):
             body_lines.append(sep)
         body_lines.append(fmt(r))
 
@@ -108,20 +124,14 @@ def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
 
 
 def _table_fits_pre(headers: List[str], rows: List[List[str]]) -> bool:
-    """A pipe table fits the <pre> width budget when sum(col widths) plus the
-    pipe/space overhead stays under PRE_TABLE_WIDTH_LIMIT. Overhead per row is
-    `| ` + ` | ` × (n-1) + ` |` = 3*(n-1) + 4 chars."""
+    """Returns True when the table can be rendered as a pipe table.
+
+    With proportional column shrinking the table always fits horizontally —
+    we only fall back to cards when there are so many columns that even the
+    minimum readable width per column exceeds the mobile budget."""
     n = len(headers)
-    cols_w: List[int] = []
-    for i in range(n):
-        col_w = len(_abbreviate_header(headers[i]))
-        for r in rows:
-            v = r[i] if i < len(r) else ""
-            col_w = max(col_w, min(len(v), PRE_TABLE_COL_MAX))
-        cols_w.append(col_w)
     overhead = 3 * (n - 1) + 4
-    total = sum(cols_w) + overhead
-    return total <= PRE_TABLE_WIDTH_LIMIT
+    return overhead + n * PRE_TABLE_COL_MIN <= PRE_TABLE_WIDTH_LIMIT
 
 
 def _split_table_row(line: str) -> List[str]:
