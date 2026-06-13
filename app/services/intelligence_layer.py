@@ -475,15 +475,17 @@ JSON Schema:
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=5))
 
         elif entities.get("meeting_number") is not None:
-            # Hop 1: Query ONLY the requested meeting's chunks. The unfiltered
-            # fallback is added only when the meeting has no indexed chunks, so
-            # a "meeting N" question can't be answered from a neighbour meeting.
+            # Hop 1: pull the requested meeting's chunks via metadata filter.
             mnum = int(entities.get("meeting_number"))
             meeting_filter = {"meeting_number": {"$eq": mnum}}
-            scoped = self._query_pinecone(embedding, "csr_v2_enriched", top_k=15, metadata_filter=meeting_filter)
-            chunks.extend(scoped)
-            if not scoped:
-                chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=8))
+            chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=15, metadata_filter=meeting_filter))
+            # Hop 2: ALWAYS run a broad semantic fallback. meeting_number metadata
+            # is unreliable (some docs were extracted with null/wrong numbers — e.g.
+            # a "Minutes of the 28th meeting" tagged null), so a filter-only path
+            # silently loses the very document that holds the answer. We retrieve
+            # broadly and PREFER meeting-N via boost_by_entities below — never hard
+            # exclude. The LLM then corroborates the fact across the retrieved set.
+            chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=10))
 
         else:
             # General standard multi-namespace retrieval
@@ -529,26 +531,12 @@ JSON Schema:
                     rewritten_query or "", candidates, top_n=self.settings.context_max_chunks
                 )
 
-        # Meeting scope guard: a "meeting N" question must be answered ONLY from
-        # meeting-N documents. Lexical fusion / rerank can re-introduce chunks
-        # from neighbouring meetings (e.g. a 28th-meeting agenda referencing the
-        # 27th), which is how a wrong date/fact leaks in. Drop any chunk whose
-        # source document does not belong to the requested meeting — but only
-        # when at least one in-scope chunk survives, so we never empty the context.
-        if entities.get("meeting_number") is not None:
-            try:
-                want = int(entities["meeting_number"])
-                in_scope = [
-                    c for c in enriched
-                    if self.directory.meeting_number_for_source(c.document_name) == want
-                ]
-                if in_scope:
-                    dropped = len(enriched) - len(in_scope)
-                    enriched = in_scope
-                    if dropped:
-                        logger.info("meeting scope guard", extra={"meeting": want, "dropped_chunks": dropped})
-            except (TypeError, ValueError):
-                pass
+        # NOTE: We deliberately do NOT hard-filter chunks to the requested
+        # meeting here. meeting_number metadata is unreliable, so excluding
+        # "out-of-scope" chunks was silently dropping the correct document
+        # (e.g. a mistagged minutes file) and producing "insufficient evidence".
+        # Instead we PREFER meeting-N via boost_by_entities above and let the
+        # LLM corroborate the fact across the retrieved set.
 
         # Cap context size so the prompt stays within budget.
         enriched = enriched[: self.settings.context_max_chunks]
@@ -721,8 +709,13 @@ CRITICAL AUDITING RULES:
    "{{Project Name}} was approved, however no implementation status was found in the available CSR records." (or similar specific missing info sentence).
 3. **Contradictions**: If the context contains contradictory numbers or statuses, do NOT pick one. Output:
    "Conflicting information was found across available records." followed by both sources.
-4. **Insufficient Evidence**: If the context has no evidence to answer the query, output EXACTLY:
+4. **Insufficient Evidence**: Use the exact refusal sentence
    "The available records do not contain sufficient evidence to answer this question confidently."
+   ONLY when the context contains NOTHING relevant to the question. If the
+   context contains the answer — even in a single chunk, even if other chunks
+   are silent on it — give that answer with its [Ref] citation. A fact present
+   in one relevant chunk is sufficient; do NOT refuse just because most chunks
+   don't mention it, or because a date/number appears in only one document.
 5. **No Fabrication**: Do not invent facts, names, or numbers.
 6. **No Fillers**: Maintain the template structure if the draft uses one.
 7. **No Letter Labels**: If the draft lists projects as "Project A", "Project B" etc.,
@@ -789,29 +782,18 @@ Output the final, verified, and polished answer. Do not include any meta-comment
         # 3. Retrieval Strategy Selection
         chunks = self._execute_retrieval(plan, embedding)
 
-        # 3b. Structured cross-check anchor. A second, independent source the LLM
-        # verifies the chunks against (the "mesh" check): if both agree, answer
-        # confidently; if they conflict, the prompt requires reporting the
-        # conflict rather than silently picking one. Fails soft to "".
-        cross_check: List[str] = []
-        if self.kb is not None:  # exact SQL records, when the KB is wired
+        # 3b. Exact structured records (only when the KB is wired — currently
+        # kb is None, so this is dormant). We intentionally do NOT inject the
+        # extraction "meeting_reference" date as a cross-check: that date is
+        # often the agenda-issue date, not the held date, so it manufactured a
+        # false conflict and pushed the verifier to "insufficient evidence".
+        # The document chunks themselves are the source of truth for dates.
+        kb_blocks = ""
+        if self.kb is not None:
             try:
-                kb = self.kb.blocks_for_plan(plan, question)
-                if kb:
-                    cross_check.append(kb)
+                kb_blocks = self.kb.blocks_for_plan(plan, question)
             except Exception:
                 logger.exception("kb block fetch failed; continuing vector-only")
-        # Meeting fact line from the extraction index (date / doc types). This is
-        # what keeps "date of meeting N" anchored to meeting N's own record.
-        _mn = plan.get("entities", {}).get("meeting_number")
-        if _mn is not None:
-            try:
-                ref = self.directory.meeting_reference(int(_mn))
-                if ref:
-                    cross_check.append(ref)
-            except (TypeError, ValueError):
-                pass
-        kb_blocks = "\n".join(cross_check)
 
         # 4. Context Builder
         context_block = self._build_context(chunks, kb_blocks)
