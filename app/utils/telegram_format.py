@@ -53,11 +53,21 @@ def _abbreviate_header(h: str) -> str:
     return _truncate(h_stripped, PRE_TABLE_COL_MAX)
 
 
-def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
-    """Render an aligned monospace table inside Telegram <pre>...</pre>.
+_TOTAL_KEYWORDS = {"total", "totals", "grand total", "sub total", "subtotal"}
 
-    Numeric columns are right-aligned. Long text cells are truncated with …
-    so the row fits inside PRE_TABLE_WIDTH_LIMIT chars (mobile-friendly)."""
+
+def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
+    """Render a GitHub-style markdown pipe table inside Telegram <pre>...</pre>.
+
+    Format:
+        | #  | Entity            | Amount |
+        |----|-------------------|--------|
+        |  1 | PTC Vishram Sadan | 600.00 |
+        |    | TOTAL             | 999.00 |
+
+    Numeric columns are right-aligned, text columns left-aligned, long cells
+    truncated with … so the row stays mobile-friendly. A separator row is
+    inserted above any TOTAL row to visually anchor it."""
     n = len(headers)
     norm_rows = [r + [""] * (n - len(r)) for r in rows]
 
@@ -83,21 +93,24 @@ def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
         for i, c in enumerate(cells[:n]):
             c = _truncate(c, widths[i])
             parts.append(c.rjust(widths[i]) if is_num[i] else c.ljust(widths[i]))
-        return "  ".join(parts).rstrip()
+        return "| " + " | ".join(parts) + " |"
 
-    body_lines = [fmt(abbr_headers)]
-    sep = "  ".join("-" * w for w in widths)
-    body_lines.append(sep)
+    sep = "|" + "|".join("-" * (w + 2) for w in widths) + "|"
+
+    body_lines: List[str] = [fmt(abbr_headers), sep]
     for r in norm_rows:
+        first = (r[0] or "").strip().lower()
+        if first in _TOTAL_KEYWORDS or (not r[0] and any(s in (r[i] or "").strip().lower() for i in range(1, n) for s in _TOTAL_KEYWORDS)):
+            body_lines.append(sep)
         body_lines.append(fmt(r))
 
     return "\n<pre>\n" + "\n".join(body_lines) + "\n</pre>\n"
 
 
 def _table_fits_pre(headers: List[str], rows: List[List[str]]) -> bool:
-    """Heuristic: a table fits a <pre> block if each column's used width stays
-    small enough that the total row width is within PRE_TABLE_WIDTH_LIMIT.
-    Otherwise fall back to per-record blocks."""
+    """A pipe table fits the <pre> width budget when sum(col widths) plus the
+    pipe/space overhead stays under PRE_TABLE_WIDTH_LIMIT. Overhead per row is
+    `| ` + ` | ` × (n-1) + ` |` = 3*(n-1) + 4 chars."""
     n = len(headers)
     cols_w: List[int] = []
     for i in range(n):
@@ -106,7 +119,8 @@ def _table_fits_pre(headers: List[str], rows: List[List[str]]) -> bool:
             v = r[i] if i < len(r) else ""
             col_w = max(col_w, min(len(v), PRE_TABLE_COL_MAX))
         cols_w.append(col_w)
-    total = sum(cols_w) + (n - 1) * 2
+    overhead = 3 * (n - 1) + 4
+    total = sum(cols_w) + overhead
     return total <= PRE_TABLE_WIDTH_LIMIT
 
 
