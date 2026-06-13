@@ -13,15 +13,53 @@ just a SELECT + regex pass over ~20 filenames).
 """
 from __future__ import annotations
 
+import json
 import re
 import time
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
 from app.db.sqlite_client import SQLiteClient
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+# Extraction JSONs (committed to the repo, present on the VPS). Each file is
+# named <drive_file_id>.json and carries the meeting number / type / date — the
+# authoritative basis for turning a raw Pinecone source id into a readable label.
+_PROCESSED_V2_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "processed_v2"
+
+_MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def _fmt_iso_date(s: Optional[str]) -> Optional[str]:
+    """'2025-09-04' -> '04 Sep 2025'. Returns the input unchanged if not ISO."""
+    if not s:
+        return None
+    m = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})", s.strip())
+    if not m:
+        return s
+    y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    if 1 <= mo <= 12:
+        return f"{d:02d} {_MONTHS[mo]} {y}"
+    return s
+
+
+def _normalize_doc_type(raw: Optional[str]) -> str:
+    """Map extraction document_type strings to a short readable noun."""
+    t = (raw or "").lower()
+    if "agenda" in t:
+        return "Agenda"
+    if "minutes" in t:
+        return "Minutes"
+    if "resolution" in t or "circulat" in t:
+        return "Resolution by Circulation"
+    if "moa" in t or "memorand" in t:
+        return "MOA / Memorandum"
+    if "board" in t or "bod" in t:
+        return "Board Document"
+    return raw.strip() if raw else "Document"
 
 # Matches "20th", "21st", "22nd", "23rd", "26th" etc.
 _ORDINAL_RE = re.compile(r"\b(\d+)(st|nd|rd|th)\b", re.IGNORECASE)
@@ -57,6 +95,34 @@ class DocumentDirectoryService:
         self.db = db
         self._cache: List[DirEntry] = []
         self._cached_at: float = 0.0
+        self._v2_meta: Optional[Dict[str, dict]] = None  # file_id -> {meeting, type, date}
+
+    def _v2_meta_map(self) -> Dict[str, dict]:
+        """Lazy-load file_id -> meeting metadata from the committed extraction
+        JSONs. These are static, so we cache once. Used as the authoritative
+        fallback for humanize_source when ingested_files lacks the file id
+        (the V2 enriched vectors were ingested offline)."""
+        if self._v2_meta is not None:
+            return self._v2_meta
+        meta: Dict[str, dict] = {}
+        try:
+            if _PROCESSED_V2_DIR.is_dir():
+                for f in _PROCESSED_V2_DIR.glob("*.json"):
+                    try:
+                        d = json.loads(f.read_text(encoding="utf-8"))
+                        mtg = d.get("meeting") or {}
+                        meta[f.stem] = {
+                            "meeting_number": mtg.get("meeting_number"),
+                            "doc_type": _normalize_doc_type(d.get("document_type")),
+                            "date": _fmt_iso_date(mtg.get("meeting_date")),
+                        }
+                    except Exception as ex:
+                        logger.debug("v2 meta load skipped", extra={"file": f.name, "err": str(ex)})
+        except Exception as e:
+            logger.debug("v2 meta dir scan failed", extra={"err": str(e)})
+        self._v2_meta = meta
+        logger.info("v2 source-label metadata loaded", extra={"n_files": len(meta)})
+        return meta
 
     def all(self) -> List[DirEntry]:
         if time.time() - self._cached_at > self.REFRESH_SECONDS:
@@ -211,11 +277,30 @@ class DocumentDirectoryService:
         s = raw.strip()
         # Drop any extension so '<file_id>.pdf'/'.json' resolves to the file_id.
         base = re.sub(r"\.(pdf|json|docx?|txt)$", "", s, flags=re.IGNORECASE)
+
+        # 1. Readable Drive filename via ingested_files (nicest when present).
         by_id = {e.file_id: e for e in self.all() if e.file_id}
         entry = by_id.get(base) or by_id.get(s)
         if entry:
             return self._friendly_label(entry)
-        # Maybe the label already equals a readable document_name.
+
+        # 2. Authoritative fallback: the extraction JSON for this file_id
+        #    (the V2 vectors were ingested offline, so ingested_files often
+        #    lacks them — this map always has them on the VPS).
+        meta = self._v2_meta_map().get(base) or self._v2_meta_map().get(s)
+        if meta:
+            mnum = meta.get("meeting_number")
+            doc_type = meta.get("doc_type") or "Document"
+            if mnum is not None:
+                label = f"{_ordinal(int(mnum))} CSR Committee {doc_type}"
+                if meta.get("date"):
+                    label += f" ({meta['date']})"
+                return label
+            if meta.get("date"):
+                return f"CSR {doc_type} ({meta['date']})"
+            return f"CSR {doc_type}"
+
+        # 3. Maybe the label already equals a readable document_name.
         for e in self.all():
             if e.document_name == s:
                 return self._friendly_label(e)
