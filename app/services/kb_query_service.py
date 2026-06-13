@@ -213,11 +213,25 @@ class KBQueryService:
         if intent in ("budget_lookup", "expenditure_lookup", "allocation_lookup", "meeting_budget"):
             blocks.append(self.budget_lines(financial_year=ents.get("financial_year"), meeting_no=mnum))
 
-        # Attendance questions — detect a person name in the question.
+        # Attendance questions. The planner extracts person_name + the
+        # person_attendance intent; prefer those, then fall back to keyword +
+        # capitalized-name detection so older/looser phrasings still resolve.
         ql = question.lower()
-        if any(w in ql for w in ("attend", "attendee", "present", "member", "who came", "chaired")):
-            if mnum is None:
-                # try person-level lookup with capitalized tokens from the question
+        person = (ents.get("person_name") or "").strip()
+        is_attendance = (
+            intent == "person_attendance"
+            or bool(person)
+            or any(w in ql for w in ("attend", "attendee", "present", "member", "who came", "chaired"))
+        )
+        if is_attendance and mnum is None:
+            if person:
+                # Surname-only lookup is the most robust (kb stores canonical full
+                # names; "Rashmi Verma" and "Verma" both need to match).
+                blocks.append(self.person_attendance(person))
+                surname = person.split()[-1]
+                if surname and surname.lower() != person.lower():
+                    blocks.append(self.person_attendance(surname))
+            else:
                 names = re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b", question)
                 for n in names[:2]:
                     blocks.append(self.person_attendance(n))

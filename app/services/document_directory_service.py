@@ -38,6 +38,16 @@ class DirEntry:
     agenda_date: Optional[str]
     meeting_date: Optional[str]
     doc_type: str  # 'Agenda', 'Minutes', 'BOD', 'Resolution', 'Memorandum', 'Other'
+    file_id: Optional[str] = None
+
+
+def _ordinal(n: int) -> str:
+    """13 -> '13th', 21 -> '21st', 23 -> '23rd'."""
+    if 10 <= (n % 100) <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
 
 
 class DocumentDirectoryService:
@@ -55,7 +65,7 @@ class DocumentDirectoryService:
 
     def _refresh(self) -> None:
         rows = self.db.fetchall(
-            "SELECT name, n_chunks FROM ingested_files WHERE status = 'indexed' AND n_chunks > 0"
+            "SELECT file_id, name, n_chunks FROM ingested_files WHERE status = 'indexed' AND n_chunks > 0"
         )
         entries: List[DirEntry] = []
         for r in rows:
@@ -68,6 +78,7 @@ class DocumentDirectoryService:
                     agenda_date=self._parse_agenda_date(name),
                     meeting_date=self._parse_meeting_date(name),
                     doc_type=self._parse_doc_type(name),
+                    file_id=r["file_id"],
                 )
             )
         # Sort: numbered meetings ascending by ordinal, then non-numbered alphabetically.
@@ -176,3 +187,46 @@ class DocumentDirectoryService:
 
     def document_names_for_meeting(self, ordinal: int) -> List[str]:
         return [e.document_name for e in self.all() if e.meeting_number == ordinal]
+
+    # ---------- human-readable source labels ----------
+    @staticmethod
+    def _friendly_label(e: DirEntry) -> str:
+        """Turn a directory entry into a citation label a Telegram user understands,
+        e.g. '23rd CSR Committee Minutes (held 22.07.2024)'. Falls back to the raw
+        readable filename when no meeting ordinal could be parsed."""
+        if e.meeting_number is not None:
+            label = f"{_ordinal(e.meeting_number)} CSR Committee {e.doc_type}"
+            date = e.meeting_date or e.agenda_date
+            if date:
+                label += f" (held {date})" if e.meeting_date else f" (agenda {date})"
+            return label
+        return e.document_name
+
+    def humanize_source(self, raw: str) -> str:
+        """Map a raw Pinecone source label (a Drive file-id like
+        '1Nqw9r7Ozt_8Dy3MBiL4xnc2slbRwcKTF.pdf') to a readable citation.
+        Leaves already-readable labels (e.g. project-master names) untouched."""
+        if not raw:
+            return raw
+        s = raw.strip()
+        # Drop any extension so '<file_id>.pdf'/'.json' resolves to the file_id.
+        base = re.sub(r"\.(pdf|json|docx?|txt)$", "", s, flags=re.IGNORECASE)
+        by_id = {e.file_id: e for e in self.all() if e.file_id}
+        entry = by_id.get(base) or by_id.get(s)
+        if entry:
+            return self._friendly_label(entry)
+        # Maybe the label already equals a readable document_name.
+        for e in self.all():
+            if e.document_name == s:
+                return self._friendly_label(e)
+        return s
+
+    @staticmethod
+    def clean_page(page) -> Optional[str]:
+        """Normalize a page value: '3.0' -> '3', None -> None."""
+        if page is None or page == "":
+            return None
+        s = str(page).strip()
+        if s.endswith(".0"):
+            s = s[:-2]
+        return s or None

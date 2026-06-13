@@ -79,6 +79,15 @@ def _build_deps(settings: Settings) -> Deps:
     telegram = TelegramService(settings)
     directory = DocumentDirectoryService(sqlite)
 
+    # NOTE: The relational Knowledge Base (KBQueryService) is intentionally NOT
+    # wired here yet. The current extraction JSONs (data/processed_v2/*.json)
+    # contain meetings + projects but NO attendees/decisions/budget rows, so a
+    # KB build would yield an empty attendance table and risk injecting
+    # unverified meeting dates as "authoritative". Attendance is served from
+    # vector chunks (see IntelligenceLayerService._retrieve_attendance). Once
+    # attendees/decisions are added to extraction, instantiate KBQueryService
+    # and pass kb=... below to enable exact SQL answers.
+
     reranker = None
     if settings.enable_reranker:
         from app.services.reranker import LLMReranker

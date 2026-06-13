@@ -198,17 +198,17 @@ class RAGService:
             out.append(c)
         return out
 
-    @staticmethod
-    def _with_sources(answer: str, chunks) -> str:
+    def _with_sources(self, answer: str, chunks) -> str:
         if not chunks:
             return answer
         seen = []
         for c in chunks:
             if not c.document_name:
                 continue
-            label = c.document_name
-            if c.page:
-                label += f" (p.{c.page})"
+            label = self.directory.humanize_source(c.document_name)
+            pg = self.directory.clean_page(c.page)
+            if pg:
+                label += f" (p.{pg})"
             if label not in seen:
                 seen.append(label)
         if not seen:

@@ -351,13 +351,72 @@ JSON Schema:
             logger.exception("pinecone query failed in intelligence layer", extra={"namespace": namespace, "err": str(e)})
             return []
 
+    def _retrieve_attendance(self, person_name: str) -> List[RetrievedChunk]:
+        """Deterministic cross-meeting attendance retrieval.
+
+        Attendance counting fails with plain semantic search because a person
+        listed "By Invitation" (CMD/CFO) scores low against a name query, so
+        their meeting drops out of the top-k. The corpus is small (~11 meetings),
+        so instead we walk EVERY indexed meeting and pull its top attendee-bearing
+        chunks via a per-meeting metadata filter. This guarantees every meeting's
+        attendee list reaches the LLM, which then scans for the person by name
+        across all roles. We return these directly (bypassing the rerank/context
+        cap) so no meeting is silently dropped before generation."""
+        meeting_nums = sorted(
+            {e.meeting_number for e in self.directory.all() if e.meeting_number is not None}
+        )
+        if not meeting_nums:
+            return []
+        # Name + role focused embedding ranks the attendee block highest within
+        # each meeting (covers "Member", "Chairperson", "By Invitation", CMD/CFO).
+        name_emb = self.embedder.embed(
+            f"{person_name} attendance members present in attendance "
+            f"by invitation chairperson CMD CFO CSR committee meeting minutes"
+        )
+        out: List[RetrievedChunk] = []
+        seen: Set[str] = set()
+        covered = 0
+        for n in meeting_nums:
+            hits = self._query_pinecone(
+                name_emb, "csr_v2_enriched", top_k=3,
+                metadata_filter={"meeting_number": {"$eq": n}},
+            )
+            if hits:
+                covered += 1
+            for c in hits:
+                key = c.chunk_id or f"{c.document_name}::{c.text[:50]}"
+                if key not in seen:
+                    seen.add(key)
+                    out.append(c)
+        logger.info(
+            "attendance retrieval (per-meeting)",
+            extra={"person": person_name, "meetings_total": len(meeting_nums),
+                   "meetings_covered": covered, "n_chunks": len(out)},
+        )
+        return out
+
     def _execute_retrieval(self, plan: dict, embedding: List[float]) -> List[RetrievedChunk]:
         intent = plan.get("intent", "general_faq")
         entities = plan.get("entities", {})
         rewritten_query = plan.get("rewritten_query", "")
-        
+
         chunks: List[RetrievedChunk] = []
-        
+
+        # Person-attendance: handled by a dedicated exhaustive walk over every
+        # meeting (see _retrieve_attendance). Returned directly so the rerank +
+        # context cap below can't drop a meeting before the count is computed.
+        # Gate on the attendance intent OR an attendance-phrased query so person
+        # questions like "what did X propose" are NOT hijacked into this path.
+        person_name = (entities.get("person_name") or "").strip()
+        rq = (rewritten_query or "").lower()
+        _attendance_words = ("attend", "present in", "present at", "meetings did",
+                             "how many meeting", "which meeting", "was in the", "part of the meeting")
+        if intent == "person_attendance" or (person_name and any(w in rq for w in _attendance_words)):
+            att = self._retrieve_attendance(person_name or rewritten_query)
+            if att:
+                return att
+            # Fall through to standard retrieval if the per-meeting walk found nothing.
+
         # 1. Resolve Project Entity (Fuzzy Match)
         resolved_project = None
         raw_project = entities.get("project_name")
@@ -421,29 +480,6 @@ JSON Schema:
             meeting_filter = {"meeting_number": {"$eq": mnum}}
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=15, metadata_filter=meeting_filter))
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=5))
-
-        elif intent == "person_attendance" or (entities.get("person_name") and not resolved_project and not resolved_ngo):
-            # Person-attendance: exhaustive cross-meeting search.
-            # People appear under many roles — "Member", "By Invitation", "CMD", "CFO" — so we
-            # use multiple query variants to ensure all role-tagged chunks surface, even if their
-            # cosine similarity to the original query is low.
-            person_name = entities.get("person_name") or rewritten_query
-            name_query_variants = [
-                f"{person_name} attended CSR committee meeting",
-                f"{person_name} By Invitation member CSR meeting",
-                f"attendance list {person_name} minutes",
-            ]
-            seen_person_keys: Set[str] = set()
-            for nq in name_query_variants:
-                nq_emb = self.embedder.embed(nq)
-                for c in self._query_pinecone(nq_emb, "csr_v2_enriched", top_k=20):
-                    key = c.chunk_id or f"{c.document_name}::{c.text[:50]}"
-                    if key not in seen_person_keys:
-                        seen_person_keys.add(key)
-                        chunks.append(c)
-            # Fill remaining context with primary embedding results
-            chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=10))
-            logger.info("person_attendance retrieval", extra={"person": person_name, "n_chunks": len(chunks)})
 
         else:
             # General standard multi-namespace retrieval
@@ -515,13 +551,22 @@ JSON Schema:
             + "\n"
         )
 
+        kb_block = ""
+        if kb_blocks:
+            kb_block = (
+                "=== AUTHORITATIVE STRUCTURED RECORDS (EXACT data from the knowledge base — "
+                "for counts, attendance, budgets and project facts, TRUST THESE OVER the chunks below) ===\n"
+                + kb_blocks
+                + "\n"
+            )
+
         if not chunks:
-            return directory_block + "\n(no relevant document chunks retrieved)"
+            return kb_block + directory_block + "\n(no relevant document chunks retrieved)"
 
         masters = [c for c in chunks if c.source == "csr_project_master"]
         enriched = [c for c in chunks if c.source == "csr_v2_enriched"]
 
-        lines: List[str] = [directory_block]
+        lines: List[str] = [b for b in (kb_block, directory_block) if b]
 
         if masters:
             lines.append("=== CANONICAL PROJECT SUMMARIES ===")
@@ -716,25 +761,42 @@ Output the final, verified, and polished answer. Do not include any meta-comment
         
         # 3. Retrieval Strategy Selection
         chunks = self._execute_retrieval(plan, embedding)
-        
+
+        # 3b. Authoritative structured records (exact SQL — counts, attendance,
+        # budgets). These sit ABOVE vector chunks so factual questions are
+        # answered from exact data instead of fuzzy similarity. Fails soft to ""
+        # when the KB tables aren't built.
+        kb_blocks = ""
+        if self.kb is not None:
+            try:
+                kb_blocks = self.kb.blocks_for_plan(plan, question)
+            except Exception:
+                logger.exception("kb block fetch failed; continuing vector-only")
+
         # 4. Context Builder
-        context_block = self._build_context(chunks)
+        context_block = self._build_context(chunks, kb_blocks)
         
         # 5. Dual-pass LLM Generation
         answer_text = self._generate_answer(question, plan, context_block, history)
         
-        # Append source references cleanly at the bottom if sources were cited
+        # Append source references cleanly at the bottom if sources were cited.
+        # Raw Pinecone labels are Drive file-ids; humanize_source() maps them to
+        # reader-friendly citations like "23rd CSR Committee Minutes (held 22.07.2024)".
+        def _label_for(c) -> str:
+            if c.source == "csr_project_master":
+                return f"Project Master — {self.directory.humanize_source(c.document_name)}"
+            label = self.directory.humanize_source(c.document_name or "Unknown Document")
+            pg = self.directory.clean_page(c.page)
+            if pg:
+                label += f" (p.{pg})"
+            return label
+
         sources_list = []
         for c in chunks:
-            if c.source == "csr_project_master":
-                label = f"Canonical Project Master ({c.document_name})"
-            else:
-                label = c.document_name or "Unknown Document"
-                if c.page:
-                    label += f" (p.{c.page})"
+            label = _label_for(c)
             if label not in sources_list:
                 sources_list.append(label)
-                
+
         if sources_list and "sufficient evidence" not in answer_text.lower():
             # Extract citation references used in text
             refs_used = re.findall(r"\[Ref (\d+)\]", answer_text)
@@ -745,10 +807,7 @@ Output the final, verified, and polished answer. Do not include any meta-comment
                 for idx in indices_used:
                     if idx <= len(chunks):
                         c = chunks[idx - 1]
-                        label = c.document_name
-                        if c.page:
-                            label += f" (p.{c.page})"
-                        citation_lines.append(f"• [Ref {idx}] {label}")
+                        citation_lines.append(f"• [Ref {idx}] {_label_for(c)}")
                 if citation_lines:
                     answer_text += "\n\nSources:\n" + "\n".join(citation_lines)
             else:
