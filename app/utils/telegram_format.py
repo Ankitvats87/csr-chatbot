@@ -27,7 +27,87 @@ _MULTI_BLANK_RE = re.compile(r"\n{3,}")
 _BACKTICK_RE = re.compile(r"`([^`\n]+)`")
 _TABLE_ROW_RE = re.compile(r"^\s*\|?.*\|.*\|?\s*$")
 _TABLE_SEP_RE = re.compile(r"^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$")
-_HTML_TAG_RE = re.compile(r"</?(?:b|i|code)>")
+_HTML_TAG_RE = re.compile(r"</?(?:b|i|code|pre)>")
+_NUMERIC_RE = re.compile(r"^-?\d+(?:[\d,]*\.\d+)?$")
+
+PRE_TABLE_WIDTH_LIMIT = 60
+PRE_TABLE_COL_MAX = 26
+
+
+def _is_numeric_like(cell: str) -> bool:
+    s = re.sub(r"[₹$€£¥%,\s]", "", cell)
+    return bool(s and _NUMERIC_RE.match(s))
+
+
+def _truncate(s: str, n: int) -> str:
+    return s if len(s) <= n else s[: max(0, n - 1)].rstrip() + "…"
+
+
+def _abbreviate_header(h: str) -> str:
+    # CSR docs verbose headers waste 2/3 of the row width; keep a useful short form.
+    h_stripped = re.sub(r"\([^)]*\)", "", h).strip()
+    if " / " in h_stripped:
+        h_stripped = h_stripped.split(" / ", 1)[0].strip()
+    if "/" in h_stripped and len(h_stripped) > 14:
+        h_stripped = h_stripped.split("/", 1)[0].strip()
+    return _truncate(h_stripped, PRE_TABLE_COL_MAX)
+
+
+def _render_pre_table(headers: List[str], rows: List[List[str]]) -> str:
+    """Render an aligned monospace table inside Telegram <pre>...</pre>.
+
+    Numeric columns are right-aligned. Long text cells are truncated with …
+    so the row fits inside PRE_TABLE_WIDTH_LIMIT chars (mobile-friendly)."""
+    n = len(headers)
+    norm_rows = [r + [""] * (n - len(r)) for r in rows]
+
+    is_num = [
+        all(
+            (not r[i]) or r[i] in ("—", "-") or _is_numeric_like(r[i])
+            for r in norm_rows
+        )
+        for i in range(n)
+    ]
+    abbr_headers = [_abbreviate_header(h) for h in headers]
+
+    widths = [
+        min(
+            max(len(abbr_headers[i]), *(len(r[i]) for r in norm_rows)) if norm_rows else len(abbr_headers[i]),
+            PRE_TABLE_COL_MAX,
+        )
+        for i in range(n)
+    ]
+
+    def fmt(cells: List[str]) -> str:
+        parts: List[str] = []
+        for i, c in enumerate(cells[:n]):
+            c = _truncate(c, widths[i])
+            parts.append(c.rjust(widths[i]) if is_num[i] else c.ljust(widths[i]))
+        return "  ".join(parts).rstrip()
+
+    body_lines = [fmt(abbr_headers)]
+    sep = "  ".join("-" * w for w in widths)
+    body_lines.append(sep)
+    for r in norm_rows:
+        body_lines.append(fmt(r))
+
+    return "\n<pre>\n" + "\n".join(body_lines) + "\n</pre>\n"
+
+
+def _table_fits_pre(headers: List[str], rows: List[List[str]]) -> bool:
+    """Heuristic: a table fits a <pre> block if each column's used width stays
+    small enough that the total row width is within PRE_TABLE_WIDTH_LIMIT.
+    Otherwise fall back to per-record blocks."""
+    n = len(headers)
+    cols_w: List[int] = []
+    for i in range(n):
+        col_w = len(_abbreviate_header(headers[i]))
+        for r in rows:
+            v = r[i] if i < len(r) else ""
+            col_w = max(col_w, min(len(v), PRE_TABLE_COL_MAX))
+        cols_w.append(col_w)
+    total = sum(cols_w) + (n - 1) * 2
+    return total <= PRE_TABLE_WIDTH_LIMIT
 
 
 def _split_table_row(line: str) -> List[str]:
@@ -62,18 +142,24 @@ def _convert_tables(text: str) -> str:
         ):
             headers = _split_table_row(line)
             i += 2
-            records: List[str] = []
+            rows: List[List[str]] = []
             while i < len(lines) and lines[i].count("|") >= 2 and _TABLE_ROW_RE.match(lines[i]):
                 cells = _split_table_row(lines[i])
                 cells += [""] * (len(headers) - len(cells))
-                title = cells[0] or "(item)"
-                block = [f"**{title}**"]
-                for h, v in zip(headers[1:], cells[1 : len(headers)]):
-                    if v:
-                        block.append(f"{h}: {v}" if h else v)
-                records.append("\n".join(block))
+                rows.append(cells)
                 i += 1
-            out.append("\n\n".join(records))
+            if _table_fits_pre(headers, rows):
+                out.append(_render_pre_table(headers, rows))
+            else:
+                records: List[str] = []
+                for cells in rows:
+                    title = cells[0] or "(item)"
+                    block = [f"**{title}**"]
+                    for h, v in zip(headers[1:], cells[1 : len(headers)]):
+                        if v:
+                            block.append(f"{h}: {v}" if h else v)
+                    records.append("\n".join(block))
+                out.append("\n\n".join(records))
             continue
         # Rogue single pipe-row without separator (model half-built a table):
         # render its cells on one line separated by " — ".
@@ -106,8 +192,23 @@ def format_for_telegram_html(text: str) -> str:
 
     text = _convert_tables(text)
     lines: List[str] = []
+    in_pre = False
     for raw in text.splitlines():
         line = raw.rstrip()
+
+        if line == "<pre>":
+            in_pre = True
+            lines.append(line)
+            continue
+        if line == "</pre>":
+            in_pre = False
+            lines.append(line)
+            continue
+        if in_pre:
+            # Inside a <pre> block: escape HTML but preserve all whitespace
+            # and skip every other transform — the table alignment depends on it.
+            lines.append(html.escape(line, quote=False))
+            continue
 
         if _HRULE_RE.match(line):
             continue
@@ -153,8 +254,17 @@ def clean_for_telegram(text: str) -> str:
 
     text = _convert_tables(text)
     lines: List[str] = []
+    in_pre = False
     for raw in text.splitlines():
         line = raw.rstrip()
+
+        if line == "<pre>" or line == "</pre>":
+            in_pre = (line == "<pre>")
+            continue
+        if in_pre:
+            # Already aligned by _render_pre_table — pass through as-is.
+            lines.append(line)
+            continue
 
         if _HRULE_RE.match(line):
             continue
