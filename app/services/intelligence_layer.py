@@ -486,11 +486,15 @@ JSON Schema:
             # broadly and PREFER meeting-N via boost_by_entities below — never hard
             # exclude. The LLM then corroborates the fact across the retrieved set.
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=10))
+            # Hop 3: knowledgebase has readable filenames (e.g. "28th CSR Agenda
+            # dt 18.06.2025_ Meeting dated 22.07.2025.pdf") and often scores higher.
+            chunks.extend(self._query_pinecone(embedding, "knowledgebase", top_k=5))
 
         else:
             # General standard multi-namespace retrieval
             chunks.extend(self._query_pinecone(embedding, "csr_project_master", top_k=4))
             chunks.extend(self._query_pinecone(embedding, "csr_v2_enriched", top_k=15))
+            chunks.extend(self._query_pinecone(embedding, "knowledgebase", top_k=5))
 
         # Deduplicate chunks
         seen = set()
@@ -501,9 +505,9 @@ JSON Schema:
                 seen.add(key)
                 deduped.append(c)
                 
-        # Sort chunks: Project Masters first, then enriched sorted by similarity score descending
+        # Sort chunks: Project Masters first, then document chunks sorted by score descending
         masters = [c for c in deduped if c.source == "csr_project_master"]
-        enriched = sorted([c for c in deduped if c.source == "csr_v2_enriched"], key=lambda x: x.score, reverse=True)
+        enriched = sorted([c for c in deduped if c.source in ("csr_v2_enriched", "knowledgebase")], key=lambda x: x.score, reverse=True)
 
         # ── Hybrid lexical fusion + entity boost + rerank ──────────────
         # BM25 catches exact tokens (amounts, resolution numbers, names) that
@@ -579,7 +583,7 @@ JSON Schema:
             return kb_block + directory_block + "\n(no relevant document chunks retrieved)"
 
         masters = [c for c in chunks if c.source == "csr_project_master"]
-        enriched = [c for c in chunks if c.source == "csr_v2_enriched"]
+        enriched = [c for c in chunks if c.source in ("csr_v2_enriched", "knowledgebase")]
 
         lines: List[str] = [b for b in (kb_block, directory_block) if b]
 
@@ -593,9 +597,11 @@ JSON Schema:
             lines.append("=== DETAILED CSR DOCUMENT CHUNKS ===")
             for i, c in enumerate(enriched, len(masters) + 1):
                 c.chunk_id = f"Ref-{i}"
-                header = f"[Ref {i}] Source: {c.document_name or 'Unknown Document'}"
-                if c.page:
-                    header += f", Page {c.page}"
+                readable_name = self.directory.humanize_source(c.document_name or "Unknown Document")
+                header = f"[Ref {i}] Source: {readable_name}"
+                page = self.directory.clean_page(c.page)
+                if page:
+                    header += f", Page {page}"
                 lines.append(f"{header} (Score: {c.score:.2f}):\n{c.text.strip()}\n")
                 
         return "\n".join(lines)
