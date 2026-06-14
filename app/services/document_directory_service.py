@@ -317,12 +317,11 @@ class DocumentDirectoryService:
         # 1. Readable Drive filename via ingested_files (nicest when present).
         by_id = {e.file_id: e for e in self.all() if e.file_id}
         entry = by_id.get(base) or by_id.get(s)
-        if entry:
+        if entry and entry.meeting_number is not None:
             return self._friendly_label(entry)
 
-        # 2. Authoritative fallback: the extraction JSON for this file_id
-        #    (the V2 vectors were ingested offline, so ingested_files often
-        #    lacks them — this map always has them on the VPS).
+        # 2. Extraction JSON metadata (has meeting_number, doc_type, date even
+        #    when ingested_files only stored the raw file-id as the name).
         meta = self._v2_meta_map().get(base) or self._v2_meta_map().get(s)
         if meta:
             mnum = meta.get("meeting_number")
